@@ -41,6 +41,24 @@ export interface Finding {
   explanation: string;
 }
 
+export interface TypeCount {
+  type: string;
+  count: number;
+}
+
+export interface ModelCount {
+  model: string;
+  count: number;
+}
+
+export interface Summary {
+  pass_count: number;
+  fail_count: number;
+  by_type: TypeCount[];
+  by_model: ModelCount[];
+  top_failure_types: TypeCount[];
+}
+
 export class ApiError extends Error {
   readonly status: number;
   readonly issues: string[];
@@ -187,10 +205,40 @@ async function requestJson(path: string, init?: RequestInit): Promise<unknown> {
   return response.json() as Promise<unknown>;
 }
 
+function isTypeCount(value: unknown): value is TypeCount {
+  return isRecord(value) && typeof value.type === "string" && typeof value.count === "number";
+}
+
+function isModelCount(value: unknown): value is ModelCount {
+  return isRecord(value) && typeof value.model === "string" && typeof value.count === "number";
+}
+
+function isSummary(value: unknown): value is Summary {
+  return (
+    isRecord(value) &&
+    typeof value.pass_count === "number" &&
+    typeof value.fail_count === "number" &&
+    Array.isArray(value.by_type) &&
+    value.by_type.every(isTypeCount) &&
+    Array.isArray(value.by_model) &&
+    value.by_model.every(isModelCount) &&
+    Array.isArray(value.top_failure_types) &&
+    value.top_failure_types.every(isTypeCount)
+  );
+}
+
 export async function fetchHealth(): Promise<HealthResponse> {
   const body = await requestJson("/health");
   if (!isHealthResponse(body)) {
     throw new Error("Health check returned an unexpected payload");
+  }
+  return body;
+}
+
+export async function fetchSummary(): Promise<Summary> {
+  const body = await requestJson("/summary");
+  if (!isSummary(body)) {
+    throw new Error("Summary returned an unexpected payload");
   }
   return body;
 }

@@ -153,3 +153,21 @@ class FindingOut(BaseModel):
 class AnalyzeAllResponse(BaseModel):
     runs_analyzed: int
     findings: int
+
+
+class TypeCount(BaseModel):
+    type: str
+    count: int
+
+
+class ModelCount(BaseModel):
+    model: str
+    count: int
+
+
+class SummaryResponse(BaseModel):
+    pass_count: int
+    fail_count: int
+    by_type: list[TypeCount]
+    by_model: list[ModelCount]
+    top_failure_types: list[TypeCount]

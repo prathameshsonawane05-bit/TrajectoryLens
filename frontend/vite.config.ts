@@ -19,6 +19,10 @@ export default defineConfig({
   server: {
     proxy: {
       "/health": apiProxy,
+      "/summary": {
+        ...apiProxy,
+        bypass: bypassHtml,
+      },
       "/runs": {
         ...apiProxy,
         bypass: bypassHtml,

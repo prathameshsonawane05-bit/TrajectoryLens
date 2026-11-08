@@ -18,12 +18,15 @@ from app.schemas import (
     AnalyzeAllResponse,
     FinalStatus,
     FindingOut,
+    ModelCount,
     RunCreate,
     RunListResponse,
     RunOut,
     RunSummary,
     StepOut,
     StepType,
+    SummaryResponse,
+    TypeCount,
 )
 
 DbSession = Annotated[Session, Depends(get_db)]
@@ -187,6 +190,37 @@ def list_runs(
         total=0 if total is None else total,
         limit=limit,
         offset=offset,
+    )
+
+
+@runs_router.get("/summary")
+def get_summary(db: DbSession) -> SummaryResponse:
+    status_rows = db.execute(
+        select(Run.final_status, func.count()).group_by(Run.final_status)
+    ).all()
+    status_counts = {str(status): int(count) for status, count in status_rows}
+    type_rows = db.execute(
+        select(Finding.type, func.count(Finding.id))
+        .group_by(Finding.type)
+        .order_by(func.count(Finding.id).desc(), Finding.type.asc()),
+    ).all()
+    by_type = [
+        TypeCount(type=str(finding_type), count=int(count))
+        for finding_type, count in type_rows
+    ]
+    model_rows = db.execute(
+        select(Run.model, func.count(Finding.id))
+        .outerjoin(Finding, Finding.run_id == Run.id)
+        .group_by(Run.model)
+        .order_by(func.count(Finding.id).desc(), Run.model.asc()),
+    ).all()
+    by_model = [ModelCount(model=str(model), count=int(count)) for model, count in model_rows]
+    return SummaryResponse(
+        pass_count=status_counts.get("pass", 0),
+        fail_count=status_counts.get("fail", 0),
+        by_type=by_type,
+        by_model=by_model,
+        top_failure_types=by_type[:5],
     )
 
 
