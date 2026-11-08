@@ -16,17 +16,31 @@ Every sample trajectory in this repository was written for TrajectoryLens. No cl
 
 ## Setup
 
-Prerequisites: Python 3.11, [uv](https://docs.astral.sh/uv/), and Node.js 20 or newer.
+Prerequisites: Python 3.11 and Node.js 20 or newer. Use [uv](https://docs.astral.sh/uv/) when Python is externally managed.
 
-`python3.11 -m venv` fails when Python was installed by uv, because that interpreter is marked externally managed and `ensurepip` refuses to run. `uv venv` creates the environment instead. That environment does not include `pip`, so the install command is `uv pip`.
+Backend, from the repository root. Pick one way to create the virtual environment and install dependencies.
 
-Backend:
+Standard Python:
+
+```bash
+cd backend
+python3.11 -m venv .venv
+source .venv/bin/activate
+pip install -e ".[dev]"
+```
+
+Externally managed Python, including a Python installed by uv. `python3.11 -m venv` fails there because `ensurepip` refuses to run, and `uv venv` does not include `pip`:
 
 ```bash
 cd backend
 uv venv --python 3.11 .venv
 source .venv/bin/activate
 uv pip install -e ".[dev]"
+```
+
+Start the API with the virtual environment still active:
+
+```bash
 uvicorn app.main:app --reload --port 8000
 ```
 
@@ -42,7 +56,7 @@ npm run dev
 
 Open [http://127.0.0.1:5173](http://127.0.0.1:5173). The dev server proxies `/health`, `/runs`, and `/summary` to the backend.
 
-Load the synthetic samples after the API is running. Use a second shell, start at the repository root, and activate the virtualenv first. A bare `python` is not on the default PATH, and the generators import the backend package.
+Load the synthetic samples after the API is running. Use another shell, start at the repository root, and activate the backend virtual environment first. The generators import the backend package, so they fail if that environment is not active.
 
 ```bash
 source backend/.venv/bin/activate
