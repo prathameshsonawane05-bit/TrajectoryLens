@@ -141,3 +141,10 @@ class RunListResponse(BaseModel):
     total: int
     limit: int
     offset: int
+
+
+class FindingOut(BaseModel):
+    type: str
+    step_index: int
+    severity: Literal["low", "medium", "high"]
+    explanation: str

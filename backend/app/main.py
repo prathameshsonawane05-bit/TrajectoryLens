@@ -6,14 +6,17 @@ from typing import Annotated, Literal
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, Query, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from sqlalchemy import func, select
+from sqlalchemy import delete, func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, selectinload
 
+from app.analyzer import run_analysis
+from app.analyzer.registry import Finding as AnalyzedFinding
 from app.db import get_db, init_db
-from app.models import Run, Step
+from app.models import Finding, Run, Step
 from app.schemas import (
     FinalStatus,
+    FindingOut,
     RunCreate,
     RunListResponse,
     RunOut,
@@ -196,6 +199,59 @@ def delete_run(run_id: str, db: DbSession) -> Response:
     db.delete(run)
     db.commit()
     return Response(status_code=204)
+
+
+def _severity(value: str) -> Literal["low", "medium", "high"]:
+    if value == "low":
+        return "low"
+    if value == "medium":
+        return "medium"
+    if value == "high":
+        return "high"
+    raise RuntimeError(f"stored severity {value!r} is invalid")
+
+
+def _finding_out(item: AnalyzedFinding | Finding) -> FindingOut:
+    return FindingOut(
+        type=item.type,
+        step_index=item.step_index,
+        severity=_severity(item.severity),
+        explanation=item.explanation,
+    )
+
+
+def _replace_findings(db: Session, run: Run) -> list[FindingOut]:
+    analyzed = run_analysis(run)
+    db.execute(delete(Finding).where(Finding.run_id == run.id))
+    db.flush()
+    for item in analyzed:
+        db.add(
+            Finding(
+                run_id=run.id,
+                type=item.type,
+                step_index=item.step_index,
+                severity=item.severity,
+                explanation=item.explanation,
+            ),
+        )
+    db.commit()
+    return [_finding_out(item) for item in analyzed]
+
+
+@runs_router.post("/runs/{run_id}/analyze")
+def analyze_run(run_id: str, db: DbSession) -> list[FindingOut]:
+    return _replace_findings(db, _get_run(db, run_id))
+
+
+@runs_router.get("/runs/{run_id}/findings")
+def get_findings(run_id: str, db: DbSession) -> list[FindingOut]:
+    run = _get_run(db, run_id)
+    rows = db.scalars(
+        select(Finding)
+        .where(Finding.run_id == run.id)
+        .order_by(Finding.step_index, Finding.type, Finding.id),
+    ).all()
+    return [_finding_out(row) for row in rows]
 
 
 app.include_router(runs_router)

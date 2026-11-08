@@ -47,6 +47,11 @@ class Run(Base):
         cascade="all, delete-orphan",
         order_by="Step.index",
     )
+    findings: Mapped[list["Finding"]] = relationship(
+        back_populates="run",
+        cascade="all, delete-orphan",
+        order_by="Finding.step_index",
+    )
 
 
 class Step(Base):
@@ -66,3 +71,16 @@ class Step(Base):
     error_signature: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     run: Mapped[Run] = relationship(back_populates="steps")
+
+
+class Finding(Base):
+    __tablename__ = "findings"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    run_id: Mapped[int] = mapped_column(ForeignKey("runs.id", ondelete="CASCADE"), index=True)
+    type: Mapped[str] = mapped_column()
+    step_index: Mapped[int] = mapped_column()
+    severity: Mapped[str] = mapped_column()
+    explanation: Mapped[str] = mapped_column(Text)
+
+    run: Mapped[Run] = relationship(back_populates="findings")

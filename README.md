@@ -4,7 +4,7 @@ TrajectoryLens analyzes coding-agent runs (terminal task trajectories), shows wh
 
 The backend stores trajectories in SQLite and the frontend shows the health check.
 
-`POST /runs` stores a trajectory (201, 409 when `run_id` already exists, 422 when the body is invalid). `GET /runs` lists runs, newest first, with optional `status`, `model`, `limit` (default 50, max 100), and `offset`. `GET /runs/{run_id}` returns one run and its steps. `DELETE /runs/{run_id}` deletes the run and its steps.
+`POST /runs` stores a trajectory (201, 409 when `run_id` already exists, 422 when the body is invalid). `GET /runs` lists runs, newest first, with optional `status`, `model`, `limit` (default 50, max 100), and `offset`. `GET /runs/{run_id}` returns one run and its steps. `DELETE /runs/{run_id}` deletes the run and its steps. `POST /runs/{run_id}/analyze` replaces stored findings. `GET /runs/{run_id}/findings` returns them.
 
 The database file is `backend/trajectorylens.db` unless `TRAJECTORYLENS_DATABASE_URL` is set.
 
