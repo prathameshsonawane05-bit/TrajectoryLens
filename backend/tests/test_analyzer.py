@@ -566,7 +566,10 @@ def test_analyze_is_idempotent(client: TestClient) -> None:
         ],
     }
     assert client.post("/runs", json=payload).status_code == 201
-    assert client.get("/runs/loop-1/findings").json() == []
+    created = client.get("/runs/loop-1/findings")
+    assert created.status_code == 200
+    assert len(created.json()) == 1
+    assert created.json()[0]["type"] == "command_loop"
 
     first = client.post("/runs/loop-1/analyze")
     second = client.post("/runs/loop-1/analyze")
@@ -620,3 +623,113 @@ def test_delete_run_removes_findings(client: TestClient) -> None:
     with Session(get_engine()) as session:
         stored = session.scalar(select(func.count()).select_from(StoredFinding))
     assert stored == 0
+
+
+def _command_loop_payload(run_id: str) -> dict[str, object]:
+    return {
+        "run_id": run_id,
+        "task_id": "retry",
+        "model": "fake-model-a",
+        "final_status": "pass",
+        "agent_claimed_success": False,
+        "steps": [
+            {
+                "index": index,
+                "type": "command",
+                "content": "pytest -q",
+                "file": None,
+                "output": "1 failed",
+                "exit_code": 0,
+                "tests_passed": None,
+                "tests_failed": None,
+                "error_signature": None,
+            }
+            for index in range(3)
+        ],
+    }
+
+
+def _no_test_payload(run_id: str) -> dict[str, object]:
+    return {
+        "run_id": run_id,
+        "task_id": "stop",
+        "model": "fake-model-b",
+        "final_status": "fail",
+        "agent_claimed_success": False,
+        "steps": [
+            {
+                "index": 0,
+                "type": "message",
+                "content": "stopping",
+                "file": None,
+                "output": "",
+                "exit_code": None,
+                "tests_passed": None,
+                "tests_failed": None,
+                "error_signature": None,
+            }
+        ],
+    }
+
+
+def test_create_run_stores_findings(client: TestClient) -> None:
+    created = client.post("/runs", json=_command_loop_payload("auto-loop"))
+    assert created.status_code == 201
+    findings = client.get("/runs/auto-loop/findings")
+    assert findings.status_code == 200
+    assert [item["type"] for item in findings.json()] == ["command_loop"]
+
+    quiet = client.post(
+        "/runs",
+        json={
+            "run_id": "auto-quiet",
+            "task_id": "ok",
+            "model": "fake-model-a",
+            "final_status": "pass",
+            "agent_claimed_success": True,
+            "steps": [
+                {
+                    "index": 0,
+                    "type": "message",
+                    "content": "done",
+                    "file": None,
+                    "output": "",
+                    "exit_code": None,
+                    "tests_passed": None,
+                    "tests_failed": None,
+                    "error_signature": None,
+                }
+            ],
+        },
+    )
+    assert quiet.status_code == 201
+    assert client.get("/runs/auto-quiet/findings").json() == []
+
+
+def test_analyze_all_is_idempotent(client: TestClient) -> None:
+    empty = client.post("/analyze-all")
+    assert empty.status_code == 200
+    assert empty.json() == {"runs_analyzed": 0, "findings": 0}
+
+    assert client.post("/runs", json=_command_loop_payload("loop-a")).status_code == 201
+    assert client.post("/runs", json=_no_test_payload("note-a")).status_code == 201
+
+    first = client.post("/analyze-all")
+    assert first.status_code == 200
+    assert first.json() == {"runs_analyzed": 2, "findings": 2}
+    snapshot = {
+        "loop-a": client.get("/runs/loop-a/findings").json(),
+        "note-a": client.get("/runs/note-a/findings").json(),
+    }
+    assert [item["type"] for item in snapshot["loop-a"]] == ["command_loop"]
+    assert [item["type"] for item in snapshot["note-a"]] == ["no_test_run"]
+
+    second = client.post("/analyze-all")
+    assert second.status_code == 200
+    assert second.json() == first.json()
+    assert client.get("/runs/loop-a/findings").json() == snapshot["loop-a"]
+    assert client.get("/runs/note-a/findings").json() == snapshot["note-a"]
+
+    with Session(get_engine()) as session:
+        stored = session.scalar(select(func.count()).select_from(StoredFinding))
+    assert stored == 2

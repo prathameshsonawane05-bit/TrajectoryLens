@@ -15,6 +15,7 @@ from app.analyzer.registry import Finding as AnalyzedFinding
 from app.db import get_db, init_db
 from app.models import Finding, Run, Step
 from app.schemas import (
+    AnalyzeAllResponse,
     FinalStatus,
     FindingOut,
     RunCreate,
@@ -155,6 +156,7 @@ def create_run(payload: RunCreate, db: DbSession) -> RunOut:
         db.rollback()
         raise HTTPException(status_code=409, detail="run_id already exists") from None
     db.refresh(run)
+    _replace_findings(db, run)
     return _run_out(run)
 
 
@@ -220,7 +222,7 @@ def _finding_out(item: AnalyzedFinding | Finding) -> FindingOut:
     )
 
 
-def _replace_findings(db: Session, run: Run) -> list[FindingOut]:
+def _replace_findings(db: Session, run: Run, *, commit: bool = True) -> list[FindingOut]:
     analyzed = run_analysis(run)
     db.execute(delete(Finding).where(Finding.run_id == run.id))
     db.flush()
@@ -234,8 +236,21 @@ def _replace_findings(db: Session, run: Run) -> list[FindingOut]:
                 explanation=item.explanation,
             ),
         )
-    db.commit()
+    if commit:
+        db.commit()
+    else:
+        db.flush()
     return [_finding_out(item) for item in analyzed]
+
+
+@runs_router.post("/analyze-all")
+def analyze_all(db: DbSession) -> AnalyzeAllResponse:
+    runs = db.scalars(select(Run).options(selectinload(Run.steps)).order_by(Run.id)).all()
+    total = 0
+    for run in runs:
+        total += len(_replace_findings(db, run, commit=False))
+    db.commit()
+    return AnalyzeAllResponse(runs_analyzed=len(runs), findings=total)
 
 
 @runs_router.post("/runs/{run_id}/analyze")

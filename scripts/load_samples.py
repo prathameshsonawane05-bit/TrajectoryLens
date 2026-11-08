@@ -8,6 +8,7 @@ from __future__ import annotations
 import json
 import sys
 import urllib.error
+import urllib.parse
 import urllib.request
 from pathlib import Path
 from typing import cast
@@ -55,6 +56,54 @@ def load_samples(base_url: str, path: Path) -> None:
             raise SystemExit(f"failed to load {run_id}: {status} {detail}")
         loaded += 1
     print(f"loaded {loaded} samples")
+    _analyze_all(base_url)
+
+
+def _analyze_all(base_url: str) -> None:
+    status, detail = _request("POST", f"{base_url}/analyze-all")
+    if status != 200:
+        raise SystemExit(f"analyze-all failed: {status} {detail}")
+    body = cast(dict[str, object], json.loads(detail))
+    print(f"analyzed {body['runs_analyzed']} runs, {body['findings']} findings")
+    for name, count in _findings_by_type(base_url).items():
+        print(f"{name} {count}")
+
+
+def _findings_by_type(base_url: str) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    offset = 0
+    total: int | None = None
+    while total is None or offset < total:
+        status, detail = _request("GET", f"{base_url}/runs?limit=100&offset={offset}")
+        if status != 200:
+            raise SystemExit(f"could not list runs: {status} {detail}")
+        page = cast(dict[str, object], json.loads(detail))
+        raw_total = page["total"]
+        raw_items = page["items"]
+        if not isinstance(raw_total, int) or not isinstance(raw_items, list):
+            raise SystemExit("run list response was not usable")
+        total = raw_total
+        if len(raw_items) == 0:
+            break
+        for item in raw_items:
+            if not isinstance(item, dict):
+                raise SystemExit("run list contained a non-object")
+            run_id = item.get("run_id")
+            if not isinstance(run_id, str):
+                raise SystemExit("run list item is missing run_id")
+            quoted = urllib.parse.quote(run_id, safe="")
+            finding_status, finding_body = _request("GET", f"{base_url}/runs/{quoted}/findings")
+            if finding_status != 200:
+                raise SystemExit(f"could not read findings for {run_id}: {finding_status}")
+            findings = json.loads(finding_body)
+            if not isinstance(findings, list):
+                raise SystemExit(f"findings for {run_id} were not a list")
+            for finding in findings:
+                if isinstance(finding, dict) and isinstance(finding.get("type"), str):
+                    finding_type = cast(str, finding["type"])
+                    counts[finding_type] = counts.get(finding_type, 0) + 1
+        offset += len(raw_items)
+    return dict(sorted(counts.items()))
 
 
 def main() -> None:

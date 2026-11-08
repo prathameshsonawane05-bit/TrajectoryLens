@@ -17,7 +17,7 @@ python scripts/generate_heldout.py
 python scripts/generate_heldout_v2.py
 ```
 
-`expected_findings` stays in the JSON file and is not sent to the API. The held-out file is a separate 15-run set used only to print precision and recall.
+`expected_findings` stays in the JSON file and is not sent to the API. The held-out file is a separate 15-run set used only to print precision and recall. `load_samples.py` then calls `POST /analyze-all` and prints finding counts by type. New uploads are analyzed as they are stored.
 
 ## Prerequisites
 

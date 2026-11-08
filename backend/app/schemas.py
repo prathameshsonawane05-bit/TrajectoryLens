@@ -148,3 +148,8 @@ class FindingOut(BaseModel):
     step_index: int
     severity: Literal["low", "medium", "high"]
     explanation: str
+
+
+class AnalyzeAllResponse(BaseModel):
+    runs_analyzed: int
+    findings: int
