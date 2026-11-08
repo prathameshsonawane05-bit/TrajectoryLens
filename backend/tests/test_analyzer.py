@@ -185,6 +185,20 @@ def test_command_loop_edge_thresholds() -> None:
     assert of_type(run_analysis(spread), "command_loop") == []
 
 
+def test_command_loop_ignores_dot_slash_and_backslashes() -> None:
+    run = make_run(
+        [
+            command(0, "python src/cart.py --check", "cart check: 4 lines"),
+            command(1, "python ./src/cart.py --check", "Cart check: 4 lines"),
+            command(2, "python src\\cart.py --check", "CART CHECK: 4 lines"),
+        ],
+        final_status="pass",
+    )
+    found = of_type(run_analysis(run), "command_loop")
+    assert len(found) == 1
+    assert found[0].step_index == 2
+
+
 def test_command_loop_within_window() -> None:
     run = make_run(
         [
@@ -402,6 +416,38 @@ def test_ignored_error_message_naming_exception_is_not_ignored() -> None:
                 exit_code=1,
             ),
             message(1, "The ImportError for month_number is a missing helper."),
+        ],
+        final_status="pass",
+    )
+    assert of_type(run_analysis(run), "ignored_error") == []
+
+
+def test_symptom_fix_treats_absolute_and_relative_as_the_same_file() -> None:
+    signature = "AssertionError: total was 9"
+    run = make_run(
+        [
+            edit(0, "cart/total.py"),
+            make_test_run(1, tests_failed=1, error_signature=signature),
+            edit(2, "/tmp/work/cart/total.py"),
+            make_test_run(3, tests_failed=1, error_signature=signature),
+            edit(4, "cart/total.py"),
+        ],
+    )
+    found = of_type(run_analysis(run), "symptom_fix")
+    assert len(found) == 1
+    assert found[0].step_index == 4
+
+
+def test_ignored_error_edit_of_absolute_path_is_not_ignored() -> None:
+    run = make_run(
+        [
+            command(
+                0,
+                "python cart/total.py",
+                "SyntaxError: invalid syntax",
+                exit_code=1,
+            ),
+            edit(1, "/tmp/work/cart/total.py", "close the parenthesis"),
         ],
         final_status="pass",
     )

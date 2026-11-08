@@ -23,6 +23,34 @@ def _canonical_file(path: str) -> str:
     return cleaned
 
 
+def _is_absolute(path: str) -> bool:
+    return path.startswith("/") or (len(path) >= 3 and path[1] == ":" and path[2] == "/")
+
+
+def _same_file(left: str, right: str) -> bool:
+    """True when two paths name one file, including absolute and relative forms."""
+    a = _canonical_file(left)
+    b = _canonical_file(right)
+    if not a or not b:
+        return False
+    if a == b:
+        return True
+    if _is_absolute(a) == _is_absolute(b):
+        return False
+    longer, shorter = (a, b) if len(a) >= len(b) else (b, a)
+    return longer.endswith("/" + shorter)
+
+
+def _normalize_command(text: str) -> str:
+    """Drop path-spelling differences so ./ and backslashes do not split a command."""
+    tokens: list[str] = []
+    for token in text.replace("\\", "/").split():
+        while token.startswith("./"):
+            token = token[2:]
+        tokens.append(token)
+    return " ".join(tokens)
+
+
 def _paths_in(text: str) -> set[str]:
     return {_canonical_file(match) for match in _PATH_RE.findall(text)}
 
@@ -59,7 +87,7 @@ def command_loop(run: Run) -> list[Finding]:
     for position, step in enumerate(_ordered(run)):
         if step.type != "command":
             continue
-        command = step.content.strip()
+        command = _normalize_command(step.content)
         joined = False
         for loop in reversed(loops):
             if loop.command != command:
@@ -195,8 +223,12 @@ def symptom_fix(run: Run) -> list[Finding]:
     steps = _ordered(run)
     edits_by_file: dict[str, list[Step]] = {}
     for step in steps:
-        if step.type == "edit" and step.file and step.file.strip():
-            edits_by_file.setdefault(_canonical_file(step.file), []).append(step)
+        if step.type != "edit" or not step.file or not step.file.strip():
+            continue
+        key = next((name for name in edits_by_file if _same_file(step.file, name)), None)
+        if key is None:
+            key = _canonical_file(step.file)
+        edits_by_file.setdefault(key, []).append(step)
 
     findings: list[Finding] = []
     for file_name, edits in edits_by_file.items():
@@ -252,7 +284,7 @@ def _addresses_error(command: Step, nxt: Step) -> bool:
     if nxt.type not in ("message", "edit"):
         return False
     haystack = "\n".join(part for part in (nxt.content, nxt.file or "") if part)
-    if nxt.file and _canonical_file(nxt.file) in _failing_files(command):
+    if nxt.file and any(_same_file(nxt.file, path) for path in _failing_files(command)):
         return True
     mentioned = _exception_names(command.output)
     if command.error_signature:

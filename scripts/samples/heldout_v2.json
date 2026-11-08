@@ -1,0 +1,669 @@
+[
+  {
+    "run_id": "v2-01-check-loop",
+    "task_id": "dry-run the toybin packer",
+    "model": "harbor-small",
+    "final_status": "pass",
+    "agent_claimed_success": true,
+    "steps": [
+      {
+        "index": 0,
+        "type": "command",
+        "content": "python toybin/pack.py --dry-run",
+        "file": null,
+        "output": "packed 4\n",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "command",
+        "content": "python toybin/pack.py --dry-run",
+        "file": null,
+        "output": "packed 4",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "command",
+        "content": "python toybin/pack.py --dry-run",
+        "file": null,
+        "output": "PACKED 4",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 3,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "4 passed",
+        "exit_code": 0,
+        "tests_passed": 4,
+        "tests_failed": 0,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "command_loop"
+    ]
+  },
+  {
+    "run_id": "v2-02-unrelated-edit",
+    "task_id": "build the toybin demo target",
+    "model": "lumen-lite",
+    "final_status": "pass",
+    "agent_claimed_success": true,
+    "steps": [
+      {
+        "index": 0,
+        "type": "command",
+        "content": "make -C toybin demo",
+        "file": null,
+        "output": "make: *** No rule to make target 'demo'.  Stop.",
+        "exit_code": 2,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "edit",
+        "content": "add a heading for the packing list",
+        "file": "notes/heading.md",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "2 passed",
+        "exit_code": 0,
+        "tests_passed": 2,
+        "tests_failed": 0,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "ignored_error"
+    ]
+  },
+  {
+    "run_id": "v2-03-price-regression",
+    "task_id": "tax on the sample receipt",
+    "model": "kite-mini",
+    "final_status": "fail",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "1 failed",
+        "exit_code": 1,
+        "tests_passed": 8,
+        "tests_failed": 1,
+        "error_signature": "AssertionError: receipt tax was 0"
+      },
+      {
+        "index": 1,
+        "type": "message",
+        "content": "The sample receipt shows no tax.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "edit",
+        "content": "set the tax rate to zero on purpose",
+        "file": "receipt/tax.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 3,
+        "type": "message",
+        "content": "Trying a zero rate.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 4,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "6 failed",
+        "exit_code": 1,
+        "tests_passed": 3,
+        "tests_failed": 6,
+        "error_signature": "AssertionError: receipt tax was 0"
+      },
+      {
+        "index": 5,
+        "type": "message",
+        "content": "Six tax checks fail now.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 6,
+        "type": "message",
+        "content": "The zero rate was the wrong experiment.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 7,
+        "type": "message",
+        "content": "Leaving the receipt red.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "edit_then_fail"
+    ]
+  },
+  {
+    "run_id": "v2-04-louder-same-count",
+    "task_id": "tax on the sample receipt",
+    "model": "harbor-small",
+    "final_status": "fail",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "2 failed",
+        "exit_code": 1,
+        "tests_passed": 5,
+        "tests_failed": 2,
+        "error_signature": "AssertionError: receipt tax was 0"
+      },
+      {
+        "index": 1,
+        "type": "edit",
+        "content": "reword the tax error",
+        "file": "receipt/tax.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "2 failed, and the tax line is now in bold",
+        "exit_code": 1,
+        "tests_passed": 5,
+        "tests_failed": 2,
+        "error_signature": "AssertionError: receipt tax was 0"
+      },
+      {
+        "index": 3,
+        "type": "message",
+        "content": "The count is still two.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 4,
+        "type": "message",
+        "content": "The wording is louder and the number is the same.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 5,
+        "type": "message",
+        "content": "I am not counting this as progress.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 6,
+        "type": "message",
+        "content": "Stopping with two failures.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": []
+  },
+  {
+    "run_id": "v2-05-repeated-price-patch",
+    "task_id": "tax on the sample receipt",
+    "model": "lumen-lite",
+    "final_status": "fail",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "edit",
+        "content": "log the tax",
+        "file": "receipt/tax.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "1 failed",
+        "exit_code": 1,
+        "tests_passed": 4,
+        "tests_failed": 1,
+        "error_signature": "AssertionError: receipt tax was 0"
+      },
+      {
+        "index": 2,
+        "type": "edit",
+        "content": "log the tax twice",
+        "file": "receipt/tax.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 3,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "1 failed",
+        "exit_code": 1,
+        "tests_passed": 4,
+        "tests_failed": 1,
+        "error_signature": "AssertionError: receipt tax was 0"
+      },
+      {
+        "index": 4,
+        "type": "edit",
+        "content": "log the tax with a prefix",
+        "file": "receipt/tax.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 5,
+        "type": "message",
+        "content": "The tax is still 0.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "symptom_fix"
+    ]
+  },
+  {
+    "run_id": "v2-06-green-tests-red-run",
+    "task_id": "tax on the sample receipt",
+    "model": "kite-mini",
+    "final_status": "fail",
+    "agent_claimed_success": true,
+    "steps": [
+      {
+        "index": 0,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "5 passed",
+        "exit_code": 0,
+        "tests_passed": 5,
+        "tests_failed": 0,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "message",
+        "content": "The receipt tests passed.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "message",
+        "content": "The harness still marks the run failed.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "false_success_claim"
+    ]
+  },
+  {
+    "run_id": "v2-07-promised-tomorrow",
+    "task_id": "pack counts in toybin",
+    "model": "harbor-small",
+    "final_status": "fail",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "3 failed",
+        "exit_code": 1,
+        "tests_passed": 1,
+        "tests_failed": 3,
+        "error_signature": "AssertionError: toybin packed 1 item"
+      },
+      {
+        "index": 1,
+        "type": "message",
+        "content": "Reading the packing list.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "message",
+        "content": "Still thinking about the missing items.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 3,
+        "type": "message",
+        "content": "I will revisit this tomorrow.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "gave_up_early"
+    ]
+  },
+  {
+    "run_id": "v2-08-edits-without-tests",
+    "task_id": "pack counts in toybin",
+    "model": "lumen-lite",
+    "final_status": "fail",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "message",
+        "content": "The packing list is wrong.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "edit",
+        "content": "rename a local variable",
+        "file": "toybin/pack.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "message",
+        "content": "I changed a name and I am stopping.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "no_test_run"
+    ]
+  },
+  {
+    "run_id": "v2-09-quoted-the-error",
+    "task_id": "tax on the sample receipt",
+    "model": "kite-mini",
+    "final_status": "pass",
+    "agent_claimed_success": true,
+    "steps": [
+      {
+        "index": 0,
+        "type": "command",
+        "content": "python receipt/tax.py",
+        "file": null,
+        "output": "ZeroDivisionError: division by zero",
+        "exit_code": 1,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "message",
+        "content": "ZeroDivisionError: division by zero came from the tax rate. I will set a default rate.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "edit",
+        "content": "default the rate to 0.05",
+        "file": "receipt/tax.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 3,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "5 passed",
+        "exit_code": 0,
+        "tests_passed": 5,
+        "tests_failed": 0,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": []
+  },
+  {
+    "run_id": "v2-10-claim-and-regression",
+    "task_id": "weights in the toybin packer",
+    "model": "harbor-small",
+    "final_status": "fail",
+    "agent_claimed_success": true,
+    "steps": [
+      {
+        "index": 0,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "1 failed",
+        "exit_code": 1,
+        "tests_passed": 4,
+        "tests_failed": 1,
+        "error_signature": "ValueError: toybin weight is blank"
+      },
+      {
+        "index": 1,
+        "type": "edit",
+        "content": "treat a blank weight as 1",
+        "file": "toybin/pack.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "3 failed",
+        "exit_code": 1,
+        "tests_passed": 2,
+        "tests_failed": 3,
+        "error_signature": "ValueError: toybin weight is blank"
+      },
+      {
+        "index": 3,
+        "type": "message",
+        "content": "Three weight checks fail now.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 4,
+        "type": "message",
+        "content": "I am still looking.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 5,
+        "type": "message",
+        "content": "The blank weight is still in the fixture.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 6,
+        "type": "message",
+        "content": "Another look at the fixture.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 7,
+        "type": "message",
+        "content": "The toybin packer is fixed.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "edit_then_fail",
+      "false_success_claim"
+    ]
+  }
+]
