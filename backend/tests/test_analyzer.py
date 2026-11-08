@@ -375,6 +375,55 @@ def test_ignored_error_negative_message_quotes_error() -> None:
     assert of_type(run_analysis(run), "ignored_error") == []
 
 
+def test_ignored_error_edit_of_command_path_is_not_ignored() -> None:
+    run = make_run(
+        [
+            command(
+                0,
+                "python toy_api/paginate.py",
+                "Traceback (most recent call last):\n"
+                "ModuleNotFoundError: No module named 'toy_api'",
+                exit_code=1,
+            ),
+            edit(1, "./toy_api/paginate.py", "export the paginate function"),
+        ],
+        final_status="pass",
+    )
+    assert of_type(run_analysis(run), "ignored_error") == []
+
+
+def test_ignored_error_message_naming_exception_is_not_ignored() -> None:
+    run = make_run(
+        [
+            command(
+                0,
+                "python playground_cal/parse.py",
+                "ImportError: cannot import name 'month_number' from 'playground_cal.parse'",
+                exit_code=1,
+            ),
+            message(1, "The ImportError for month_number is a missing helper."),
+        ],
+        final_status="pass",
+    )
+    assert of_type(run_analysis(run), "ignored_error") == []
+
+
+def test_symptom_fix_treats_dot_slash_as_the_same_file() -> None:
+    signature = "AssertionError: expected 3 got 2"
+    run = make_run(
+        [
+            edit(0, "./app.py"),
+            make_test_run(1, tests_failed=1, error_signature=signature),
+            edit(2, "app.py"),
+            make_test_run(3, tests_failed=1, error_signature=signature),
+            edit(4, "./app.py"),
+        ],
+    )
+    found = of_type(run_analysis(run), "symptom_fix")
+    assert len(found) == 1
+    assert found[0].step_index == 4
+
+
 def test_ignored_error_edge_failure_is_last_step() -> None:
     run = make_run(
         [command(0, "python app.py", "No such file: app.py", exit_code=1)],

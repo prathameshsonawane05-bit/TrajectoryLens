@@ -1,0 +1,2230 @@
+[
+  {
+    "run_id": "clean-01",
+    "task_id": "fix pagination bug in toy-api",
+    "model": "lumen-lite",
+    "final_status": "pass",
+    "agent_claimed_success": true,
+    "steps": [
+      {
+        "index": 0,
+        "type": "command",
+        "content": "python toy_api/paginate.py --page 2",
+        "file": null,
+        "output": "page ok: 10 rows",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "edit",
+        "content": "return the slice for the requested page",
+        "file": "toy_api/paginate.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "6 passed",
+        "exit_code": 0,
+        "tests_passed": 6,
+        "tests_failed": 0,
+        "error_signature": null
+      },
+      {
+        "index": 3,
+        "type": "message",
+        "content": "Pagination in toy-api now returns the second page.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": []
+  },
+  {
+    "run_id": "clean-02",
+    "task_id": "add retry to fake-client",
+    "model": "lumen-lite",
+    "final_status": "pass",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "command",
+        "content": "python -m fake_client.ping",
+        "file": null,
+        "output": "pong",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "4 passed",
+        "exit_code": 0,
+        "tests_passed": 4,
+        "tests_failed": 0,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "message",
+        "content": "The fake client retries once and then succeeds.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": []
+  },
+  {
+    "run_id": "clean-03",
+    "task_id": "sort search results in demo-shop",
+    "model": "harbor-small",
+    "final_status": "pass",
+    "agent_claimed_success": true,
+    "steps": [
+      {
+        "index": 0,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "3 passed",
+        "exit_code": 0,
+        "tests_passed": 3,
+        "tests_failed": 0,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "command",
+        "content": "python demo_shop/search.py --q mug",
+        "file": null,
+        "output": "sorted 3 hits",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "message",
+        "content": "Demo shop search is ordered by price.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": []
+  },
+  {
+    "run_id": "clean-04",
+    "task_id": "validate nickname in sample-form",
+    "model": "lumen-lite",
+    "final_status": "pass",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "command",
+        "content": "python sample_form/check.py",
+        "file": null,
+        "output": "nickname accepted",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "edit",
+        "content": "reject a blank nickname",
+        "file": "sample_form/check.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "5 passed",
+        "exit_code": 0,
+        "tests_passed": 5,
+        "tests_failed": 0,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": []
+  },
+  {
+    "run_id": "clean-05",
+    "task_id": "fix pagination bug in toy-api",
+    "model": "kite-mini",
+    "final_status": "pass",
+    "agent_claimed_success": true,
+    "steps": [
+      {
+        "index": 0,
+        "type": "command",
+        "content": "python toy_api/paginate.py --page 2",
+        "file": null,
+        "output": "Traceback (most recent call last):\nModuleNotFoundError: No module named 'toy_api'",
+        "exit_code": 1,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "edit",
+        "content": "export the paginate function",
+        "file": "toy_api/paginate.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "4 passed",
+        "exit_code": 0,
+        "tests_passed": 4,
+        "tests_failed": 0,
+        "error_signature": null
+      },
+      {
+        "index": 3,
+        "type": "message",
+        "content": "The second page of toy-api loads.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": []
+  },
+  {
+    "run_id": "clean-06",
+    "task_id": "cache lookup in toy-store",
+    "model": "lumen-lite",
+    "final_status": "pass",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "command",
+        "content": "python toy_store/cache.py",
+        "file": null,
+        "output": "Traceback (most recent call last):\nModuleNotFoundError: No module named 'toy_store'",
+        "exit_code": 1,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "edit",
+        "content": "create the missing cache helper",
+        "file": "./toy_store/cache.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "3 passed",
+        "exit_code": 0,
+        "tests_passed": 3,
+        "tests_failed": 0,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": []
+  },
+  {
+    "run_id": "clean-07",
+    "task_id": "parse month names in playground-cal",
+    "model": "lumen-lite",
+    "final_status": "pass",
+    "agent_claimed_success": true,
+    "steps": [
+      {
+        "index": 0,
+        "type": "command",
+        "content": "python playground_cal/parse.py",
+        "file": null,
+        "output": "ImportError: cannot import name 'month_number' from 'playground_cal.parse'",
+        "exit_code": 1,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "message",
+        "content": "The ImportError for month_number is a missing helper. I will add it.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "edit",
+        "content": "add month_number for the playground calendar",
+        "file": "playground_cal/parse.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 3,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "4 passed",
+        "exit_code": 0,
+        "tests_passed": 4,
+        "tests_failed": 0,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": []
+  },
+  {
+    "run_id": "clean-08",
+    "task_id": "add retry to fake-client",
+    "model": "lumen-lite",
+    "final_status": "pass",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "command",
+        "content": "python -m fake_client.call",
+        "file": null,
+        "output": "TimeoutError: fake-client timed out talking to the stub server",
+        "exit_code": 1,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "message",
+        "content": "TimeoutError from the stub means the retry wrapper never ran.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "edit",
+        "content": "retry the stub call twice",
+        "file": "fake_client/call.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 3,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "5 passed",
+        "exit_code": 0,
+        "tests_passed": 5,
+        "tests_failed": 0,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": []
+  },
+  {
+    "run_id": "loop-01",
+    "task_id": "fix pagination bug in toy-api",
+    "model": "lumen-lite",
+    "final_status": "pass",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "command",
+        "content": "python toy_api/paginate.py --page 2",
+        "file": null,
+        "output": "page items: 0",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "command",
+        "content": "python toy_api/paginate.py --page 2",
+        "file": null,
+        "output": "page items: 0",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "command",
+        "content": "python toy_api/paginate.py --page 2",
+        "file": null,
+        "output": "page items: 0",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 3,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "1 passed",
+        "exit_code": 0,
+        "tests_passed": 1,
+        "tests_failed": 0,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "command_loop"
+    ]
+  },
+  {
+    "run_id": "loop-02",
+    "task_id": "sort search results in demo-shop",
+    "model": "lumen-lite",
+    "final_status": "pass",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "command",
+        "content": "python demo_shop/search.py --q mug",
+        "file": null,
+        "output": "retrieved 10 items from the toy catalog",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "command",
+        "content": "python demo_shop/search.py --q mug",
+        "file": null,
+        "output": "retrieved 10 items from the toy catalog",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "command",
+        "content": "python demo_shop/search.py --q mug",
+        "file": null,
+        "output": "retrieved 10 items from the toy catalog",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 3,
+        "type": "command",
+        "content": "python demo_shop/search.py --q mug",
+        "file": null,
+        "output": "retrieved 10 items from the toy catalog",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 4,
+        "type": "command",
+        "content": "python demo_shop/search.py --q mug",
+        "file": null,
+        "output": "retrieved 10 items from the toy catalog",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "command_loop"
+    ]
+  },
+  {
+    "run_id": "loop-03",
+    "task_id": "cache lookup in toy-store",
+    "model": "kite-mini",
+    "final_status": "pass",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "2 passed",
+        "exit_code": 0,
+        "tests_passed": 2,
+        "tests_failed": 0,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "command",
+        "content": "python toy_store/cache.py --key sku-1",
+        "file": null,
+        "output": "cache miss for sku-1",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "edit",
+        "content": "jot down the miss",
+        "file": "toy_store/notes.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 3,
+        "type": "command",
+        "content": "python toy_store/cache.py --key sku-1",
+        "file": null,
+        "output": "cache miss for sku-1",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 4,
+        "type": "message",
+        "content": "The toy-store cache still misses sku-1.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 5,
+        "type": "command",
+        "content": "python toy_store/cache.py --key sku-1",
+        "file": null,
+        "output": "cache miss for sku-1",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "command_loop"
+    ]
+  },
+  {
+    "run_id": "loop-04",
+    "task_id": "add retry to fake-client",
+    "model": "harbor-small",
+    "final_status": "pass",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "command",
+        "content": "python -m fake_client.ping",
+        "file": null,
+        "output": "retrieved 10 items from the toy catalog",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "command",
+        "content": "python -m fake_client.ping",
+        "file": null,
+        "output": "retrieved 11 items from the toy catalog",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "command",
+        "content": "python -m fake_client.ping",
+        "file": null,
+        "output": "retrieved 10 items from the toy catalog",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "command_loop"
+    ]
+  },
+  {
+    "run_id": "edit-fail-01",
+    "task_id": "fix pagination bug in toy-api",
+    "model": "kite-mini",
+    "final_status": "fail",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "1 failed",
+        "exit_code": 1,
+        "tests_passed": 4,
+        "tests_failed": 1,
+        "error_signature": "AssertionError: expected page 2 to return 10 rows, got 0"
+      },
+      {
+        "index": 1,
+        "type": "command",
+        "content": "python toy_api/show.py",
+        "file": null,
+        "output": "current slice starts at 0",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "edit",
+        "content": "shift the slice start by one",
+        "file": "toy_api/paginate.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 3,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "3 failed",
+        "exit_code": 1,
+        "tests_passed": 2,
+        "tests_failed": 3,
+        "error_signature": "AssertionError: expected page 2 to return 10 rows, got 0"
+      }
+    ],
+    "expected_findings": [
+      "edit_then_fail"
+    ]
+  },
+  {
+    "run_id": "edit-fail-02",
+    "task_id": "sort search results in demo-shop",
+    "model": "harbor-small",
+    "final_status": "fail",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "2 failed",
+        "exit_code": 1,
+        "tests_passed": 3,
+        "tests_failed": 2,
+        "error_signature": "ValueError: demo-shop price is blank"
+      },
+      {
+        "index": 1,
+        "type": "edit",
+        "content": "coerce blank prices to zero",
+        "file": "demo_shop/search.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "message",
+        "content": "Blank prices should sort last.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 3,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "4 failed",
+        "exit_code": 1,
+        "tests_passed": 1,
+        "tests_failed": 4,
+        "error_signature": "ValueError: demo-shop price is blank"
+      }
+    ],
+    "expected_findings": [
+      "edit_then_fail"
+    ]
+  },
+  {
+    "run_id": "edit-fail-03",
+    "task_id": "validate nickname in sample-form",
+    "model": "lumen-lite",
+    "final_status": "pass",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "1 failed",
+        "exit_code": 1,
+        "tests_passed": 5,
+        "tests_failed": 1,
+        "error_signature": "KeyError: sample-form field nickname"
+      },
+      {
+        "index": 1,
+        "type": "edit",
+        "content": "read nickname with a default",
+        "file": "sample_form/check.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "2 failed",
+        "exit_code": 1,
+        "tests_passed": 4,
+        "tests_failed": 2,
+        "error_signature": "KeyError: sample-form field nickname"
+      }
+    ],
+    "expected_findings": [
+      "edit_then_fail"
+    ]
+  },
+  {
+    "run_id": "edit-fail-04",
+    "task_id": "parse month names in playground-cal",
+    "model": "harbor-small",
+    "final_status": "fail",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "1 failed",
+        "exit_code": 1,
+        "tests_passed": 2,
+        "tests_failed": 1,
+        "error_signature": "AssertionError: playground-cal parsed month 13"
+      },
+      {
+        "index": 1,
+        "type": "edit",
+        "content": "clamp the month into 1..12",
+        "file": "playground_cal/parse.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "command",
+        "content": "python playground_cal/show.py",
+        "file": null,
+        "output": "month=13",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 3,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "2 failed",
+        "exit_code": 1,
+        "tests_passed": 1,
+        "tests_failed": 2,
+        "error_signature": "AssertionError: playground-cal parsed month 13"
+      }
+    ],
+    "expected_findings": [
+      "edit_then_fail"
+    ]
+  },
+  {
+    "run_id": "claim-01",
+    "task_id": "fix pagination bug in toy-api",
+    "model": "harbor-small",
+    "final_status": "fail",
+    "agent_claimed_success": true,
+    "steps": [
+      {
+        "index": 0,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "6 passed",
+        "exit_code": 0,
+        "tests_passed": 6,
+        "tests_failed": 0,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "message",
+        "content": "The toy-api page size looks correct to me.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "false_success_claim"
+    ]
+  },
+  {
+    "run_id": "claim-02",
+    "task_id": "add retry to fake-client",
+    "model": "kite-mini",
+    "final_status": "fail",
+    "agent_claimed_success": true,
+    "steps": [
+      {
+        "index": 0,
+        "type": "command",
+        "content": "python -m fake_client.ping",
+        "file": null,
+        "output": "pong",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "4 passed",
+        "exit_code": 0,
+        "tests_passed": 4,
+        "tests_failed": 0,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "message",
+        "content": "Retries are in place and the stub answers.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "false_success_claim"
+    ]
+  },
+  {
+    "run_id": "claim-03",
+    "task_id": "sort search results in demo-shop",
+    "model": "lumen-lite",
+    "final_status": "fail",
+    "agent_claimed_success": true,
+    "steps": [
+      {
+        "index": 0,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "3 passed",
+        "exit_code": 0,
+        "tests_passed": 3,
+        "tests_failed": 0,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "edit",
+        "content": "sort hits by the price field",
+        "file": "demo_shop/search.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "message",
+        "content": "Demo shop results are sorted.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "false_success_claim"
+    ]
+  },
+  {
+    "run_id": "claim-04",
+    "task_id": "cache lookup in toy-store",
+    "model": "kite-mini",
+    "final_status": "fail",
+    "agent_claimed_success": true,
+    "steps": [
+      {
+        "index": 0,
+        "type": "command",
+        "content": "python toy_store/cache.py --key sku-1",
+        "file": null,
+        "output": "hit",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "2 passed",
+        "exit_code": 0,
+        "tests_passed": 2,
+        "tests_failed": 0,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "false_success_claim"
+    ]
+  },
+  {
+    "run_id": "giveup-01",
+    "task_id": "fix pagination bug in toy-api",
+    "model": "kite-mini",
+    "final_status": "fail",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "2 failed",
+        "exit_code": 1,
+        "tests_passed": 1,
+        "tests_failed": 2,
+        "error_signature": "AssertionError: expected page 2 to return 10 rows, got 0"
+      },
+      {
+        "index": 1,
+        "type": "message",
+        "content": "I am stopping here.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "gave_up_early"
+    ]
+  },
+  {
+    "run_id": "giveup-02",
+    "task_id": "add retry to fake-client",
+    "model": "kite-mini",
+    "final_status": "fail",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "1 failed",
+        "exit_code": 1,
+        "tests_passed": 2,
+        "tests_failed": 1,
+        "error_signature": "TimeoutError: fake-client retry budget exhausted"
+      },
+      {
+        "index": 1,
+        "type": "command",
+        "content": "python -m fake_client.ping",
+        "file": null,
+        "output": "no answer",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "message",
+        "content": "I am stopping here.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "gave_up_early"
+    ]
+  },
+  {
+    "run_id": "giveup-03",
+    "task_id": "sort search results in demo-shop",
+    "model": "harbor-small",
+    "final_status": "fail",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "3 failed",
+        "exit_code": 1,
+        "tests_passed": 1,
+        "tests_failed": 3,
+        "error_signature": "ValueError: demo-shop price is blank"
+      },
+      {
+        "index": 1,
+        "type": "command",
+        "content": "python demo_shop/show.py",
+        "file": null,
+        "output": "3 unsorted hits",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "command",
+        "content": "python demo_shop/count.py",
+        "file": null,
+        "output": "count=3",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 3,
+        "type": "message",
+        "content": "Leaving the demo shop unsorted.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "gave_up_early"
+    ]
+  },
+  {
+    "run_id": "giveup-04",
+    "task_id": "validate nickname in sample-form",
+    "model": "lumen-lite",
+    "final_status": "fail",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "command",
+        "content": "python sample_form/show.py",
+        "file": null,
+        "output": "form has 4 fields",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "1 failed",
+        "exit_code": 1,
+        "tests_passed": 4,
+        "tests_failed": 1,
+        "error_signature": "KeyError: sample-form field nickname"
+      },
+      {
+        "index": 2,
+        "type": "command",
+        "content": "python sample_form/count.py",
+        "file": null,
+        "output": "fields=4",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 3,
+        "type": "command",
+        "content": "pwd",
+        "file": null,
+        "output": "/work/sample-form",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 4,
+        "type": "message",
+        "content": "I am stopping here.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "gave_up_early"
+    ]
+  },
+  {
+    "run_id": "symptom-01",
+    "task_id": "cache lookup in toy-store",
+    "model": "harbor-small",
+    "final_status": "fail",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "edit",
+        "content": "print the missing key",
+        "file": "toy_store/cache.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "1 failed",
+        "exit_code": 1,
+        "tests_passed": 2,
+        "tests_failed": 1,
+        "error_signature": "LookupError: toy-store cache missed key sku-1"
+      },
+      {
+        "index": 2,
+        "type": "edit",
+        "content": "return an empty dict on a miss",
+        "file": "toy_store/cache.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 3,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "1 failed",
+        "exit_code": 1,
+        "tests_passed": 2,
+        "tests_failed": 1,
+        "error_signature": "LookupError: toy-store cache missed key sku-1"
+      },
+      {
+        "index": 4,
+        "type": "edit",
+        "content": "log the miss and return none",
+        "file": "toy_store/cache.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 5,
+        "type": "message",
+        "content": "The same cache miss is still there.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "symptom_fix"
+    ]
+  },
+  {
+    "run_id": "symptom-02",
+    "task_id": "fix pagination bug in toy-api",
+    "model": "kite-mini",
+    "final_status": "fail",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "edit",
+        "content": "hard-code the page length",
+        "file": "toy_api/paginate.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "2 failed",
+        "exit_code": 1,
+        "tests_passed": 2,
+        "tests_failed": 2,
+        "error_signature": "AssertionError: expected page 2 to return 10 rows, got 0"
+      },
+      {
+        "index": 2,
+        "type": "edit",
+        "content": "slice only the first page",
+        "file": "toy_api/paginate.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 3,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "2 failed",
+        "exit_code": 1,
+        "tests_passed": 2,
+        "tests_failed": 2,
+        "error_signature": "AssertionError: expected page 2 to return 10 rows, got 0"
+      },
+      {
+        "index": 4,
+        "type": "edit",
+        "content": "swap the start and end indexes",
+        "file": "toy_api/paginate.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "symptom_fix"
+    ]
+  },
+  {
+    "run_id": "symptom-03",
+    "task_id": "parse month names in playground-cal",
+    "model": "harbor-small",
+    "final_status": "fail",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "edit",
+        "content": "print the raw month token",
+        "file": "./playground_cal/parse.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "1 failed",
+        "exit_code": 1,
+        "tests_passed": 3,
+        "tests_failed": 1,
+        "error_signature": "AssertionError: playground-cal parsed month 13"
+      },
+      {
+        "index": 2,
+        "type": "edit",
+        "content": "strip spaces from the token",
+        "file": "playground_cal/parse.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 3,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "1 failed",
+        "exit_code": 1,
+        "tests_passed": 3,
+        "tests_failed": 1,
+        "error_signature": "AssertionError: playground-cal parsed month 13"
+      },
+      {
+        "index": 4,
+        "type": "edit",
+        "content": "lowercase the token before parsing",
+        "file": "./playground_cal/parse.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 5,
+        "type": "message",
+        "content": "Month 13 is still accepted.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "symptom_fix"
+    ]
+  },
+  {
+    "run_id": "symptom-04",
+    "task_id": "sort search results in demo-shop",
+    "model": "kite-mini",
+    "final_status": "fail",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "edit",
+        "content": "print each hit",
+        "file": "./demo_shop/search.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "1 failed",
+        "exit_code": 1,
+        "tests_passed": 3,
+        "tests_failed": 1,
+        "error_signature": "ValueError: demo-shop price is blank"
+      },
+      {
+        "index": 2,
+        "type": "edit",
+        "content": "skip a hit when the title is empty",
+        "file": "demo_shop/search.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 3,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "1 failed",
+        "exit_code": 1,
+        "tests_passed": 3,
+        "tests_failed": 1,
+        "error_signature": "ValueError: demo-shop price is blank"
+      },
+      {
+        "index": 4,
+        "type": "edit",
+        "content": "replace a blank title with 'item'",
+        "file": "./demo_shop/search.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "symptom_fix"
+    ]
+  },
+  {
+    "run_id": "ignored-01",
+    "task_id": "fix pagination bug in toy-api",
+    "model": "lumen-lite",
+    "final_status": "fail",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "1 failed",
+        "exit_code": 1,
+        "tests_passed": 4,
+        "tests_failed": 1,
+        "error_signature": "AssertionError: expected page 2 to return 10 rows, got 0"
+      },
+      {
+        "index": 1,
+        "type": "command",
+        "content": "python toy_api/build_index.py",
+        "file": null,
+        "output": "Error: toy-api index builder could not open the stub catalog",
+        "exit_code": 1,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "command",
+        "content": "python toy_api/count.py",
+        "file": null,
+        "output": "rows=10",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 3,
+        "type": "command",
+        "content": "python toy_api/show.py",
+        "file": null,
+        "output": "first row is a mug",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 4,
+        "type": "command",
+        "content": "pwd",
+        "file": null,
+        "output": "/work/toy-api",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 5,
+        "type": "command",
+        "content": "python toy_api/version.py",
+        "file": null,
+        "output": "toy-api 0.0",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 6,
+        "type": "message",
+        "content": "I am stopping here.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "ignored_error"
+    ]
+  },
+  {
+    "run_id": "ignored-02",
+    "task_id": "add retry to fake-client",
+    "model": "lumen-lite",
+    "final_status": "fail",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "1 failed",
+        "exit_code": 1,
+        "tests_passed": 2,
+        "tests_failed": 1,
+        "error_signature": "TimeoutError: fake-client retry budget exhausted"
+      },
+      {
+        "index": 1,
+        "type": "command",
+        "content": "python -m fake_client.call",
+        "file": null,
+        "output": "Error: stub server refused the fake-client hello packet",
+        "exit_code": 1,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "message",
+        "content": "Moving on to the readme examples.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 3,
+        "type": "command",
+        "content": "python -m fake_client.version",
+        "file": null,
+        "output": "0.0",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 4,
+        "type": "command",
+        "content": "pwd",
+        "file": null,
+        "output": "/work/fake-client",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 5,
+        "type": "command",
+        "content": "python -m fake_client.paths",
+        "file": null,
+        "output": "src only",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 6,
+        "type": "message",
+        "content": "I am stopping here.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "ignored_error"
+    ]
+  },
+  {
+    "run_id": "ignored-03",
+    "task_id": "cache lookup in toy-store",
+    "model": "kite-mini",
+    "final_status": "pass",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "command",
+        "content": "python toy_store/warm.py",
+        "file": null,
+        "output": "Error: toy-store warmer found no local fixture data",
+        "exit_code": 1,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "command",
+        "content": "python toy_store/count.py",
+        "file": null,
+        "output": "skus=4",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "2 passed",
+        "exit_code": 0,
+        "tests_passed": 2,
+        "tests_failed": 0,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "ignored_error"
+    ]
+  },
+  {
+    "run_id": "ignored-04",
+    "task_id": "validate nickname in sample-form",
+    "model": "harbor-small",
+    "final_status": "fail",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "1 failed",
+        "exit_code": 1,
+        "tests_passed": 3,
+        "tests_failed": 1,
+        "error_signature": "KeyError: sample-form field nickname"
+      },
+      {
+        "index": 1,
+        "type": "command",
+        "content": "python sample_form/export.py",
+        "file": null,
+        "output": "Error: sample-form export could not write the scratch file",
+        "exit_code": 2,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "command",
+        "content": "python sample_form/count.py",
+        "file": null,
+        "output": "fields=4",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 3,
+        "type": "command",
+        "content": "pwd",
+        "file": null,
+        "output": "/work/sample-form",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 4,
+        "type": "command",
+        "content": "python sample_form/version.py",
+        "file": null,
+        "output": "0.0",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 5,
+        "type": "command",
+        "content": "python sample_form/show.py",
+        "file": null,
+        "output": "nickname missing",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 6,
+        "type": "message",
+        "content": "I will not chase the export.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "ignored_error"
+    ]
+  },
+  {
+    "run_id": "notest-01",
+    "task_id": "fix pagination bug in toy-api",
+    "model": "lumen-lite",
+    "final_status": "fail",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "command",
+        "content": "python toy_api/show.py",
+        "file": null,
+        "output": "slice starts at 0",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "edit",
+        "content": "change the default page length",
+        "file": "toy_api/paginate.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "message",
+        "content": "This should page correctly now.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "no_test_run"
+    ]
+  },
+  {
+    "run_id": "notest-02",
+    "task_id": "add retry to fake-client",
+    "model": "lumen-lite",
+    "final_status": "fail",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "command",
+        "content": "python -m fake_client.ping",
+        "file": null,
+        "output": "no answer",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "message",
+        "content": "The stub is probably down, so I am done.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "no_test_run"
+    ]
+  },
+  {
+    "run_id": "notest-03",
+    "task_id": "sort search results in demo-shop",
+    "model": "lumen-lite",
+    "final_status": "fail",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "edit",
+        "content": "sort by title instead of price",
+        "file": "demo_shop/search.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "command",
+        "content": "python demo_shop/show.py",
+        "file": null,
+        "output": "3 hits",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "message",
+        "content": "Titles look alphabetical.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "no_test_run"
+    ]
+  },
+  {
+    "run_id": "notest-04",
+    "task_id": "parse month names in playground-cal",
+    "model": "kite-mini",
+    "final_status": "fail",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "command",
+        "content": "python playground_cal/show.py",
+        "file": null,
+        "output": "token=March",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "command",
+        "content": "pwd",
+        "file": null,
+        "output": "/work/playground-cal",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "message",
+        "content": "March maps to 3, so this is finished.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "no_test_run"
+    ]
+  },
+  {
+    "run_id": "dual-loop-ignored",
+    "task_id": "add retry to fake-client",
+    "model": "kite-mini",
+    "final_status": "pass",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "command",
+        "content": "python -m fake_client.ping",
+        "file": null,
+        "output": "Error: connection refused by the fake-client stub",
+        "exit_code": 1,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "command",
+        "content": "python -m fake_client.ping",
+        "file": null,
+        "output": "Error: connection refused by the fake-client stub",
+        "exit_code": 1,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "command",
+        "content": "python -m fake_client.ping",
+        "file": null,
+        "output": "Error: connection refused by the fake-client stub",
+        "exit_code": 1,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 3,
+        "type": "message",
+        "content": "Trying something else entirely.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "command_loop",
+      "ignored_error"
+    ]
+  },
+  {
+    "run_id": "dual-claim-notest",
+    "task_id": "sort search results in demo-shop",
+    "model": "harbor-small",
+    "final_status": "fail",
+    "agent_claimed_success": true,
+    "steps": [
+      {
+        "index": 0,
+        "type": "command",
+        "content": "python demo_shop/show.py",
+        "file": null,
+        "output": "3 hits",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "edit",
+        "content": "reverse the hit list",
+        "file": "demo_shop/search.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "message",
+        "content": "Search is fixed.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "false_success_claim",
+      "no_test_run"
+    ]
+  },
+  {
+    "run_id": "dual-edit-giveup",
+    "task_id": "fix pagination bug in toy-api",
+    "model": "kite-mini",
+    "final_status": "fail",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "1 failed",
+        "exit_code": 1,
+        "tests_passed": 4,
+        "tests_failed": 1,
+        "error_signature": "AssertionError: expected page 2 to return 10 rows, got 0"
+      },
+      {
+        "index": 1,
+        "type": "edit",
+        "content": "drop the last row of the page",
+        "file": "toy_api/paginate.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "4 failed",
+        "exit_code": 1,
+        "tests_passed": 1,
+        "tests_failed": 4,
+        "error_signature": "AssertionError: expected page 2 to return 10 rows, got 0"
+      },
+      {
+        "index": 3,
+        "type": "command",
+        "content": "python toy_api/count.py",
+        "file": null,
+        "output": "rows=9",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 4,
+        "type": "message",
+        "content": "I will leave toy-api in this state.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "edit_then_fail",
+      "gave_up_early"
+    ]
+  },
+  {
+    "run_id": "dual-symptom-claim",
+    "task_id": "cache lookup in toy-store",
+    "model": "lumen-lite",
+    "final_status": "fail",
+    "agent_claimed_success": true,
+    "steps": [
+      {
+        "index": 0,
+        "type": "edit",
+        "content": "print the key on every lookup",
+        "file": "toy_store/cache.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "1 failed",
+        "exit_code": 1,
+        "tests_passed": 2,
+        "tests_failed": 1,
+        "error_signature": "LookupError: toy-store cache missed key sku-1"
+      },
+      {
+        "index": 2,
+        "type": "edit",
+        "content": "return [] when the key is missing",
+        "file": "toy_store/cache.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 3,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "1 failed",
+        "exit_code": 1,
+        "tests_passed": 2,
+        "tests_failed": 1,
+        "error_signature": "LookupError: toy-store cache missed key sku-1"
+      },
+      {
+        "index": 4,
+        "type": "edit",
+        "content": "swallow the lookup and return 0",
+        "file": "toy_store/cache.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 5,
+        "type": "message",
+        "content": "The toy-store cache bug is fixed.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "false_success_claim",
+      "symptom_fix"
+    ]
+  }
+]

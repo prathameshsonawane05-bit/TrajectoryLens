@@ -8,6 +8,15 @@ The backend stores trajectories in SQLite and the frontend shows the health chec
 
 The database file is `backend/trajectorylens.db` unless `TRAJECTORYLENS_DATABASE_URL` is set.
 
+Synthetic samples, with a fixed seed:
+
+```bash
+python scripts/generate_samples.py
+python scripts/load_samples.py
+```
+
+`expected_findings` stays in the JSON file and is not sent to the API.
+
 ## Prerequisites
 
 - Python 3.11

@@ -9,10 +9,26 @@ from app.models import Run, Step
 _WINDOW_GAP = 5
 _OUTPUT_SIMILARITY = 0.9
 _PATH_RE = re.compile(r"(?<![\w.-])([\w.-]+(?:/[\w.-]+)*\.[A-Za-z0-9]+)")
+_EXCEPTION_RE = re.compile(r"\b([A-Za-z]+(?:Error|Exception))\b")
 
 
 def _ordered(run: Run) -> list[Step]:
     return sorted(run.steps, key=lambda step: step.index)
+
+
+def _canonical_file(path: str) -> str:
+    cleaned = path.strip().replace("\\", "/")
+    while cleaned.startswith("./"):
+        cleaned = cleaned[2:]
+    return cleaned
+
+
+def _paths_in(text: str) -> set[str]:
+    return {_canonical_file(match) for match in _PATH_RE.findall(text)}
+
+
+def _exception_names(text: str) -> set[str]:
+    return {match for match in _EXCEPTION_RE.findall(text) if match not in {"Error", "Exception"}}
 
 
 def _normalize(text: str) -> str:
@@ -180,7 +196,7 @@ def symptom_fix(run: Run) -> list[Finding]:
     edits_by_file: dict[str, list[Step]] = {}
     for step in steps:
         if step.type == "edit" and step.file and step.file.strip():
-            edits_by_file.setdefault(step.file.strip(), []).append(step)
+            edits_by_file.setdefault(_canonical_file(step.file), []).append(step)
 
     findings: list[Finding] = []
     for file_name, edits in edits_by_file.items():
@@ -223,10 +239,26 @@ def _error_needles(command: Step) -> list[str]:
     return needles
 
 
+def _failing_files(command: Step) -> set[str]:
+    found: set[str] = set()
+    if command.file and command.file.strip():
+        found.add(_canonical_file(command.file))
+    found.update(_paths_in(command.content))
+    found.update(_paths_in(command.output))
+    return {path for path in found if path}
+
+
 def _addresses_error(command: Step, nxt: Step) -> bool:
     if nxt.type not in ("message", "edit"):
         return False
     haystack = "\n".join(part for part in (nxt.content, nxt.file or "") if part)
+    if nxt.file and _canonical_file(nxt.file) in _failing_files(command):
+        return True
+    mentioned = _exception_names(command.output)
+    if command.error_signature:
+        mentioned.update(_exception_names(command.error_signature))
+    if any(name in haystack for name in mentioned):
+        return True
     return any(needle in haystack for needle in _error_needles(command))
 
 
