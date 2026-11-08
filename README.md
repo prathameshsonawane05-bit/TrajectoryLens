@@ -13,9 +13,10 @@ Synthetic samples, with a fixed seed:
 ```bash
 python scripts/generate_samples.py
 python scripts/load_samples.py
+python scripts/generate_heldout.py
 ```
 
-`expected_findings` stays in the JSON file and is not sent to the API.
+`expected_findings` stays in the JSON file and is not sent to the API. The held-out file is a separate 15-run set used only to print precision and recall.
 
 ## Prerequisites
 

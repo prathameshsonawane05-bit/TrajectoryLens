@@ -1,0 +1,1051 @@
+[
+  {
+    "run_id": "hold-01-same-count",
+    "task_id": "nickname length check in sample-form",
+    "model": "harbor-small",
+    "final_status": "fail",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "3 failed, 2 passed",
+        "exit_code": 1,
+        "tests_passed": 2,
+        "tests_failed": 3,
+        "error_signature": "AssertionError: sample-form nickname is blank"
+      },
+      {
+        "index": 1,
+        "type": "edit",
+        "content": "reject nicknames over 12 characters",
+        "file": "sample_form/nickname.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "still 3 failed, and the message is now louder",
+        "exit_code": 1,
+        "tests_passed": 2,
+        "tests_failed": 3,
+        "error_signature": "AssertionError: sample-form nickname is blank"
+      },
+      {
+        "index": 3,
+        "type": "message",
+        "content": "The failure count did not move.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 4,
+        "type": "command",
+        "content": "python sample_form/nickname.py --dry-run",
+        "file": null,
+        "output": "dry run ok",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 5,
+        "type": "message",
+        "content": "Stopping with the same three failures.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": []
+  },
+  {
+    "run_id": "hold-02-failures-dropped",
+    "task_id": "nickname length check in sample-form",
+    "model": "lumen-lite",
+    "final_status": "fail",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "4 failed",
+        "exit_code": 1,
+        "tests_passed": 1,
+        "tests_failed": 4,
+        "error_signature": "AssertionError: sample-form nickname is blank"
+      },
+      {
+        "index": 1,
+        "type": "edit",
+        "content": "allow a trailing space",
+        "file": "sample_form/nickname.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "1 failed",
+        "exit_code": 1,
+        "tests_passed": 4,
+        "tests_failed": 1,
+        "error_signature": "AssertionError: sample-form nickname is blank"
+      },
+      {
+        "index": 3,
+        "type": "message",
+        "content": "One nickname failure remains.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 4,
+        "type": "message",
+        "content": "The other three are gone.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 5,
+        "type": "message",
+        "content": "I am not calling the form done.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 6,
+        "type": "message",
+        "content": "Leaving the last failure for a later pass.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": []
+  },
+  {
+    "run_id": "hold-03-paraphrased-symptom",
+    "task_id": "cart total in the toy cart",
+    "model": "kite-mini",
+    "final_status": "fail",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "1 failed",
+        "exit_code": 1,
+        "tests_passed": 5,
+        "tests_failed": 1,
+        "error_signature": "AssertionError: cart total is 10 but expected 12"
+      },
+      {
+        "index": 1,
+        "type": "edit",
+        "content": "add tax after the subtotal",
+        "file": "src/cart.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "1 failed",
+        "exit_code": 1,
+        "tests_passed": 5,
+        "tests_failed": 1,
+        "error_signature": "AssertionError: cart total was 10, wanted 12"
+      },
+      {
+        "index": 3,
+        "type": "edit",
+        "content": "round the tax to cents",
+        "file": "./src/cart.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 4,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "1 failed",
+        "exit_code": 1,
+        "tests_passed": 5,
+        "tests_failed": 1,
+        "error_signature": "AssertionError: cart total came out 10 instead of 12"
+      },
+      {
+        "index": 5,
+        "type": "edit",
+        "content": "drop the tax line and add it back",
+        "file": "src\\cart.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 6,
+        "type": "message",
+        "content": "The cart total is still 10 instead of 12.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "symptom_fix"
+    ]
+  },
+  {
+    "run_id": "hold-04-abs-path-symptom",
+    "task_id": "cart total in the toy cart",
+    "model": "harbor-small",
+    "final_status": "fail",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "edit",
+        "content": "print the running total",
+        "file": "cart/total.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "1 failed",
+        "exit_code": 1,
+        "tests_passed": 2,
+        "tests_failed": 1,
+        "error_signature": "AssertionError: total was 9"
+      },
+      {
+        "index": 2,
+        "type": "edit",
+        "content": "cast the total through int",
+        "file": "/tmp/work/cart/total.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 3,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "1 failed",
+        "exit_code": 1,
+        "tests_passed": 2,
+        "tests_failed": 1,
+        "error_signature": "AssertionError: total was 9"
+      },
+      {
+        "index": 4,
+        "type": "edit",
+        "content": "add zero to the total and print it again",
+        "file": "cart/total.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 5,
+        "type": "message",
+        "content": "The total is still 9.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "symptom_fix"
+    ]
+  },
+  {
+    "run_id": "hold-05-two-edits",
+    "task_id": "cart total in the toy cart",
+    "model": "lumen-lite",
+    "final_status": "fail",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "2 failed",
+        "exit_code": 1,
+        "tests_passed": 3,
+        "tests_failed": 2,
+        "error_signature": "AssertionError: total was 9"
+      },
+      {
+        "index": 1,
+        "type": "edit",
+        "content": "log the total",
+        "file": "cart/total.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "2 failed",
+        "exit_code": 1,
+        "tests_passed": 3,
+        "tests_failed": 2,
+        "error_signature": "AssertionError: total was 9"
+      },
+      {
+        "index": 3,
+        "type": "edit",
+        "content": "log the total with a prefix",
+        "file": "cart/total.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 4,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "2 failed",
+        "exit_code": 1,
+        "tests_passed": 3,
+        "tests_failed": 2,
+        "error_signature": "AssertionError: total was 9"
+      },
+      {
+        "index": 5,
+        "type": "message",
+        "content": "Two edits were not enough.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": []
+  },
+  {
+    "run_id": "hold-06-dot-slash-loop",
+    "task_id": "check the toy cart",
+    "model": "kite-mini",
+    "final_status": "pass",
+    "agent_claimed_success": true,
+    "steps": [
+      {
+        "index": 0,
+        "type": "command",
+        "content": "python src/cart.py --check",
+        "file": null,
+        "output": "Cart check: 4 lines\n",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "command",
+        "content": "python ./src/cart.py --check",
+        "file": null,
+        "output": "cart check: 4 lines",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "command",
+        "content": "python src/cart.py --check",
+        "file": null,
+        "output": "CART CHECK: 4 lines",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 3,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "4 passed",
+        "exit_code": 0,
+        "tests_passed": 4,
+        "tests_failed": 0,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "command_loop"
+    ]
+  },
+  {
+    "run_id": "hold-07-wide-gap-loop",
+    "task_id": "list bins in toy-store",
+    "model": "harbor-small",
+    "final_status": "pass",
+    "agent_claimed_success": true,
+    "steps": [
+      {
+        "index": 0,
+        "type": "command",
+        "content": "python toy_store/list_bins.py",
+        "file": null,
+        "output": "bins: 3\n",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "command",
+        "content": "python toy_store/list_bins.py",
+        "file": null,
+        "output": "bins: 3",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "message",
+        "content": "Checking the coupon list next.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 3,
+        "type": "command",
+        "content": "python toy_store/coupons.py",
+        "file": null,
+        "output": "coupons: 2",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 4,
+        "type": "message",
+        "content": "The coupon list is a different command.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 5,
+        "type": "command",
+        "content": "python toy_store/prices.py",
+        "file": null,
+        "output": "prices: 5",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 6,
+        "type": "message",
+        "content": "Prices are unrelated.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 7,
+        "type": "command",
+        "content": "python toy_store/tags.py",
+        "file": null,
+        "output": "tags: 1",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 8,
+        "type": "command",
+        "content": "python toy_store/list_bins.py",
+        "file": null,
+        "output": "  BINS: 3  ",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 9,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "3 passed",
+        "exit_code": 0,
+        "tests_passed": 3,
+        "tests_failed": 0,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "command_loop"
+    ]
+  },
+  {
+    "run_id": "hold-08-output-drift",
+    "task_id": "list coupons in toy-store",
+    "model": "lumen-lite",
+    "final_status": "pass",
+    "agent_claimed_success": true,
+    "steps": [
+      {
+        "index": 0,
+        "type": "command",
+        "content": "python toy_store/coupons.py",
+        "file": null,
+        "output": "listed 2 coupons",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "command",
+        "content": "python toy_store/coupons.py",
+        "file": null,
+        "output": "refused: the coupon file is locked",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "command",
+        "content": "python toy_store/coupons.py",
+        "file": null,
+        "output": "wrote a new coupon for the demo bin",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 3,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "2 passed",
+        "exit_code": 0,
+        "tests_passed": 2,
+        "tests_failed": 0,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": []
+  },
+  {
+    "run_id": "hold-09-paraphrased-ack",
+    "task_id": "add the toy ledger helper",
+    "model": "kite-mini",
+    "final_status": "pass",
+    "agent_claimed_success": true,
+    "steps": [
+      {
+        "index": 0,
+        "type": "command",
+        "content": "python -c \"import toybox.ledger\"",
+        "file": null,
+        "output": "ModuleNotFoundError: No module named 'toybox.ledger'",
+        "exit_code": 1,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "message",
+        "content": "The ledger helper is missing, so I will add that module.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "edit",
+        "content": "add an empty ledger module",
+        "file": "toybox/ledger.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 3,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "2 passed",
+        "exit_code": 0,
+        "tests_passed": 2,
+        "tests_failed": 0,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": []
+  },
+  {
+    "run_id": "hold-10-sibling-command",
+    "task_id": "warm the toy-store cache",
+    "model": "harbor-small",
+    "final_status": "pass",
+    "agent_claimed_success": true,
+    "steps": [
+      {
+        "index": 0,
+        "type": "command",
+        "content": "ls toy_store/missing_bin",
+        "file": null,
+        "output": "ls: cannot access 'toy_store/missing_bin': No such file or directory",
+        "exit_code": 2,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "command",
+        "content": "python toy_store/cache.py --warm",
+        "file": null,
+        "output": "cache warmed",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "3 passed",
+        "exit_code": 0,
+        "tests_passed": 3,
+        "tests_failed": 0,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "ignored_error"
+    ]
+  },
+  {
+    "run_id": "hold-11-talked-then-stopped",
+    "task_id": "nickname length check in sample-form",
+    "model": "lumen-lite",
+    "final_status": "fail",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "2 failed",
+        "exit_code": 1,
+        "tests_passed": 2,
+        "tests_failed": 2,
+        "error_signature": "AssertionError: sample-form nickname is blank"
+      },
+      {
+        "index": 1,
+        "type": "message",
+        "content": "I will keep debugging the nickname field.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "message",
+        "content": "The blank nickname is still the problem.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 3,
+        "type": "command",
+        "content": "python sample_form/echo.py",
+        "file": null,
+        "output": "echo ok",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 4,
+        "type": "message",
+        "content": "Leaving it here.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "gave_up_early"
+    ]
+  },
+  {
+    "run_id": "hold-12-still-editing",
+    "task_id": "nickname length check in sample-form",
+    "model": "kite-mini",
+    "final_status": "fail",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "1 failed",
+        "exit_code": 1,
+        "tests_passed": 3,
+        "tests_failed": 1,
+        "error_signature": "AssertionError: sample-form nickname is blank"
+      },
+      {
+        "index": 1,
+        "type": "message",
+        "content": "Trying a small change.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "edit",
+        "content": "strip spaces before checking the length",
+        "file": "sample_form/nickname.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": []
+  },
+  {
+    "run_id": "hold-13-hedged-claim",
+    "task_id": "nickname length check in sample-form",
+    "model": "harbor-small",
+    "final_status": "fail",
+    "agent_claimed_success": true,
+    "steps": [
+      {
+        "index": 0,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "1 failed",
+        "exit_code": 1,
+        "tests_passed": 4,
+        "tests_failed": 1,
+        "error_signature": "AssertionError: sample-form nickname is blank"
+      },
+      {
+        "index": 1,
+        "type": "message",
+        "content": "Looking at the nickname fixture.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "message",
+        "content": "The blank value is still in the fixture.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 3,
+        "type": "message",
+        "content": "I did not edit the checker.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 4,
+        "type": "message",
+        "content": "The suite is still red.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 5,
+        "type": "message",
+        "content": "I am not fully sure, but the nickname form might be fine.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "false_success_claim"
+    ]
+  },
+  {
+    "run_id": "hold-14-runner-command",
+    "task_id": "exercise toy-store",
+    "model": "lumen-lite",
+    "final_status": "fail",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "command",
+        "content": "python -m toybox.runner toy_store",
+        "file": null,
+        "output": "3 failed\n1 passed",
+        "exit_code": 1,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 1,
+        "type": "message",
+        "content": "Moving on to the cache warmer.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "ignored_error",
+      "no_test_run"
+    ]
+  },
+  {
+    "run_id": "hold-15-buried-regression",
+    "task_id": "search prices in demo-shop",
+    "model": "kite-mini",
+    "final_status": "fail",
+    "agent_claimed_success": false,
+    "steps": [
+      {
+        "index": 0,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "1 failed",
+        "exit_code": 1,
+        "tests_passed": 6,
+        "tests_failed": 1,
+        "error_signature": "ValueError: demo-shop price is blank"
+      },
+      {
+        "index": 1,
+        "type": "message",
+        "content": "The price field looks empty in the fixture.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 2,
+        "type": "edit",
+        "content": "default the blank price to zero",
+        "file": "demo_shop/search.py",
+        "output": "",
+        "exit_code": 0,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 3,
+        "type": "message",
+        "content": "Defaulting a blank price and running the suite again.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 4,
+        "type": "test_run",
+        "content": "python -m toybox.runner",
+        "file": null,
+        "output": "4 failed. The zero default rejected three more rows.",
+        "exit_code": 1,
+        "tests_passed": 3,
+        "tests_failed": 4,
+        "error_signature": "ValueError: demo-shop price is blank"
+      },
+      {
+        "index": 5,
+        "type": "message",
+        "content": "The extra failures are still about price.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      },
+      {
+        "index": 6,
+        "type": "message",
+        "content": "Not claiming this is done.",
+        "file": null,
+        "output": "",
+        "exit_code": null,
+        "tests_passed": null,
+        "tests_failed": null,
+        "error_signature": null
+      }
+    ],
+    "expected_findings": [
+      "edit_then_fail"
+    ]
+  }
+]
