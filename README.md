@@ -16,15 +16,17 @@ Every sample trajectory in this repository was written for TrajectoryLens. No cl
 
 ## Setup
 
-Prerequisites: Python 3.11 and Node.js 20 or newer.
+Prerequisites: Python 3.11, [uv](https://docs.astral.sh/uv/), and Node.js 20 or newer.
+
+`python3.11 -m venv` fails when Python was installed by uv, because that interpreter is marked externally managed and `ensurepip` refuses to run. `uv venv` creates the environment instead. That environment does not include `pip`, so the install command is `uv pip`.
 
 Backend:
 
 ```bash
 cd backend
-python3.11 -m venv .venv
+uv venv --python 3.11 .venv
 source .venv/bin/activate
-pip install -e ".[dev]"
+uv pip install -e ".[dev]"
 uvicorn app.main:app --reload --port 8000
 ```
 
@@ -40,9 +42,10 @@ npm run dev
 
 Open [http://127.0.0.1:5173](http://127.0.0.1:5173). The dev server proxies `/health`, `/runs`, and `/summary` to the backend.
 
-Load the synthetic samples after the API is running:
+Load the synthetic samples after the API is running. Use a second shell, start at the repository root, and activate the virtualenv first. A bare `python` is not on the default PATH, and the generators import the backend package.
 
 ```bash
+source backend/.venv/bin/activate
 python scripts/generate_samples.py
 python scripts/load_samples.py
 ```
@@ -50,6 +53,7 @@ python scripts/load_samples.py
 `load_samples.py` stores the runs, calls `POST /analyze-all`, and prints finding counts by type. `expected_findings` stays in the JSON file and is not sent to the API. Held-out files are separate and are not loaded into the app:
 
 ```bash
+source backend/.venv/bin/activate
 python scripts/generate_heldout.py
 python scripts/generate_heldout_v2.py
 ```
