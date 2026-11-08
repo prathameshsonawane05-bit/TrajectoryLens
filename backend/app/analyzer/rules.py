@@ -27,18 +27,65 @@ def _is_absolute(path: str) -> bool:
     return path.startswith("/") or (len(path) >= 3 and path[1] == ":" and path[2] == "/")
 
 
-def _same_file(left: str, right: str) -> bool:
-    """True when two paths name one file, including absolute and relative forms."""
-    a = _canonical_file(left)
-    b = _canonical_file(right)
-    if not a or not b:
+def _is_bare(path: str) -> bool:
+    return "/" not in path
+
+
+def _directory_suffix_match(left: str, right: str) -> bool:
+    """Absolute and relative paths with a directory, when one ends with the other."""
+    if not left or not right or left == right:
         return False
-    if a == b:
-        return True
-    if _is_absolute(a) == _is_absolute(b):
+    if _is_absolute(left) == _is_absolute(right):
         return False
-    longer, shorter = (a, b) if len(a) >= len(b) else (b, a)
+    longer, shorter = (left, right) if len(left) >= len(right) else (right, left)
+    if _is_bare(shorter):
+        return False
     return longer.endswith("/" + shorter)
+
+
+def _group_roots(canonical: list[str]) -> list[int]:
+    """Cluster paths. A bare filename joins only a single candidate path."""
+    parent = list(range(len(canonical)))
+
+    def find(index: int) -> int:
+        while parent[index] != index:
+            parent[index] = parent[parent[index]]
+            index = parent[index]
+        return index
+
+    def union(left: int, right: int) -> None:
+        left_root = find(left)
+        right_root = find(right)
+        if left_root != right_root:
+            parent[right_root] = left_root
+
+    for left_index, left in enumerate(canonical):
+        for right_index in range(left_index + 1, len(canonical)):
+            right = canonical[right_index]
+            if left == right or _directory_suffix_match(left, right):
+                union(left_index, right_index)
+
+    for index, name in enumerate(canonical):
+        if not name or not _is_bare(name):
+            continue
+        candidates: set[int] = set()
+        for other_index, other in enumerate(canonical):
+            if other_index == index or not other or _is_bare(other):
+                continue
+            if other.endswith("/" + name):
+                candidates.add(find(other_index))
+        if len(candidates) == 1:
+            union(index, next(iter(candidates)))
+    return [find(index) for index in range(len(canonical))]
+
+
+def _group_key(path: str, cohort: list[str]) -> str:
+    paths = [*cohort, path]
+    canonical = [_canonical_file(item) for item in paths]
+    roots = _group_roots(canonical)
+    root = roots[-1]
+    members = [name for name, found in zip(canonical, roots, strict=True) if found == root and name]
+    return min(members) if members else canonical[-1]
 
 
 def _normalize_command(text: str) -> str:
@@ -221,14 +268,15 @@ def _signatures_between(steps: list[Step], start_index: int, end_index: int) -> 
 @rule
 def symptom_fix(run: Run) -> list[Finding]:
     steps = _ordered(run)
+    edit_steps = [
+        step for step in steps if step.type == "edit" and step.file and step.file.strip()
+    ]
+    cohort = [step.file for step in edit_steps if step.file is not None]
     edits_by_file: dict[str, list[Step]] = {}
-    for step in steps:
-        if step.type != "edit" or not step.file or not step.file.strip():
+    for step in edit_steps:
+        if step.file is None:
             continue
-        key = next((name for name in edits_by_file if _same_file(step.file, name)), None)
-        if key is None:
-            key = _canonical_file(step.file)
-        edits_by_file.setdefault(key, []).append(step)
+        edits_by_file.setdefault(_group_key(step.file, cohort), []).append(step)
 
     findings: list[Finding] = []
     for file_name, edits in edits_by_file.items():
@@ -284,8 +332,12 @@ def _addresses_error(command: Step, nxt: Step) -> bool:
     if nxt.type not in ("message", "edit"):
         return False
     haystack = "\n".join(part for part in (nxt.content, nxt.file or "") if part)
-    if nxt.file and any(_same_file(nxt.file, path) for path in _failing_files(command)):
-        return True
+    failing = list(_failing_files(command))
+    if nxt.file and failing:
+        cohort = [*failing, nxt.file]
+        edit_key = _group_key(nxt.file, cohort)
+        if any(_group_key(path, cohort) == edit_key for path in failing):
+            return True
     mentioned = _exception_names(command.output)
     if command.error_signature:
         mentioned.update(_exception_names(command.error_signature))

@@ -422,6 +422,39 @@ def test_ignored_error_message_naming_exception_is_not_ignored() -> None:
     assert of_type(run_analysis(run), "ignored_error") == []
 
 
+def test_path_matching_distinguishes_directories() -> None:
+    signature = "AssertionError: utils result was 0"
+
+    def triple(first: str, second: str, third: str) -> Run:
+        return make_run(
+            [
+                edit(0, first),
+                make_test_run(1, tests_failed=1, error_signature=signature),
+                edit(2, second),
+                make_test_run(3, tests_failed=1, error_signature=signature),
+                edit(4, third),
+            ],
+        )
+
+    different_dirs = triple("src/utils.py", "tests/utils.py", "src/utils.py")
+    assert of_type(run_analysis(different_dirs), "symptom_fix") == []
+
+    bare_with_both = triple("utils.py", "src/utils.py", "tests/utils.py")
+    assert of_type(run_analysis(bare_with_both), "symptom_fix") == []
+    bare_with_absolute = triple("utils.py", "/repo/src/utils.py", "/repo/tests/utils.py")
+    assert of_type(run_analysis(bare_with_absolute), "symptom_fix") == []
+
+    one_candidate = triple("utils.py", "src/utils.py", "./src/utils.py")
+    matched = of_type(run_analysis(one_candidate), "symptom_fix")
+    assert len(matched) == 1
+    assert matched[0].step_index == 4
+
+    same_spelling = triple("./src/utils.py", "src/utils.py", "src\\utils.py")
+    found = of_type(run_analysis(same_spelling), "symptom_fix")
+    assert len(found) == 1
+    assert found[0].step_index == 4
+
+
 def test_symptom_fix_treats_absolute_and_relative_as_the_same_file() -> None:
     signature = "AssertionError: total was 9"
     run = make_run(
