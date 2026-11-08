@@ -2,7 +2,7 @@
 
 TrajectoryLens analyzes coding-agent runs (terminal task trajectories), shows where and why the agent failed, and groups failures into recurring types.
 
-The backend stores trajectories in SQLite and the frontend shows the health check.
+The backend stores trajectories in SQLite. The frontend lists runs, shows a step timeline with findings, summarizes failure counts, and uploads a trajectory JSON file.
 
 `POST /runs` stores a trajectory (201, 409 when `run_id` already exists, 422 when the body is invalid). `GET /runs` lists runs, newest first, with optional `status`, `model`, `limit` (default 50, max 100), and `offset`. `GET /runs/{run_id}` returns one run and its steps. `DELETE /runs/{run_id}` deletes the run and its steps. `POST /runs/{run_id}/analyze` replaces stored findings. `GET /runs/{run_id}/findings` returns them.
 
@@ -54,7 +54,7 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173). The page calls `GET /health` through the Vite dev proxy and shows the backend status (`ok`).
+Open [http://localhost:5173](http://localhost:5173). The dev server proxies `/health` and `/runs` to the backend. The header shows the API status. Runs, Summary, and Upload are separate pages.
 
 Build check:
 

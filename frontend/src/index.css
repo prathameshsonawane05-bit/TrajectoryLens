@@ -4,6 +4,12 @@
   font: 18px/1.5 "Segoe UI", system-ui, sans-serif;
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
 }

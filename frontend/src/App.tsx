@@ -1,27 +1,28 @@
 import { useEffect, useState } from "react";
-import { fetchHealth } from "./api";
+import { NavLink, Route, Routes } from "react-router-dom";
+import { errorMessage, fetchHealth } from "./api";
+import RunDetailPage from "./pages/RunDetailPage";
+import RunsPage from "./pages/RunsPage";
+import SummaryPage from "./pages/SummaryPage";
+import UploadPage from "./pages/UploadPage";
 import "./App.css";
 
-type HealthState =
-  | { kind: "loading" }
-  | { kind: "ready"; status: string }
-  | { kind: "error"; message: string };
-
 export default function App() {
-  const [health, setHealth] = useState<HealthState>({ kind: "loading" });
+  const [health, setHealth] = useState<"loading" | "ok" | "error">("loading");
+  const [healthError, setHealthError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     fetchHealth()
-      .then((result) => {
+      .then(() => {
         if (!cancelled) {
-          setHealth({ kind: "ready", status: result.status });
+          setHealth("ok");
         }
       })
       .catch((error: unknown) => {
         if (!cancelled) {
-          const message = error instanceof Error ? error.message : "Unknown error";
-          setHealth({ kind: "error", message });
+          setHealth("error");
+          setHealthError(errorMessage(error));
         }
       });
     return () => {
@@ -30,20 +31,31 @@ export default function App() {
   }, []);
 
   return (
-    <main className="page">
-      <h1>TrajectoryLens</h1>
-      <p className="lede">Backend health</p>
-      {health.kind === "loading" ? <p>Checking backend…</p> : null}
-      {health.kind === "error" ? (
-        <p className="error" role="alert">
-          {health.message}
+    <>
+      <header className="topbar">
+        <NavLink to="/" className="brand">
+          TrajectoryLens
+        </NavLink>
+        <nav>
+          <NavLink to="/" end>
+            Runs
+          </NavLink>
+          <NavLink to="/summary">Summary</NavLink>
+          <NavLink to="/upload">Upload</NavLink>
+        </nav>
+        <p className={health === "error" ? "health error" : "health"}>
+          {health === "loading" ? "Checking API…" : null}
+          {health === "ok" ? "API ok" : null}
+          {health === "error" ? healthError : null}
         </p>
-      ) : null}
-      {health.kind === "ready" ? (
-        <p className="status">
-          status: <strong>{health.status}</strong>
-        </p>
-      ) : null}
-    </main>
+      </header>
+      <Routes>
+        <Route path="/" element={<RunsPage />} />
+        <Route path="/runs/:runId" element={<RunDetailPage />} />
+        <Route path="/summary" element={<SummaryPage />} />
+        <Route path="/upload" element={<UploadPage />} />
+        <Route path="*" element={<RunsPage />} />
+      </Routes>
+    </>
   );
 }
