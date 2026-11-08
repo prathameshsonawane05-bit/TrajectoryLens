@@ -4,11 +4,11 @@ TrajectoryLens is a local tool for people who build and review AI evaluation tas
 
 The backend stores trajectories in SQLite. The frontend lists runs, shows a step timeline with findings, summarizes failure counts, and uploads a trajectory JSON file.
 
-**Screenshot placeholder:** runs table with status badges and finding counts. Save a capture as `docs/screenshots/runs.png`.
+![Runs table with status badges and finding counts](docs/screenshots/runs.png)
 
-**Screenshot placeholder:** run detail timeline with a highlighted finding. Save a capture as `docs/screenshots/detail.png`.
+![Run detail timeline with a highlighted finding](docs/screenshots/detail.png)
 
-**Screenshot placeholder:** summary charts of findings by type and by model. Save a capture as `docs/screenshots/summary.png`.
+![Summary charts of findings by type and by model. Model names are placeholders.](docs/screenshots/summary.png)
 
 ## Sample data is synthetic
 
