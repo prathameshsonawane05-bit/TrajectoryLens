@@ -1,0 +1,18 @@
+.page {
+  max-width: 40rem;
+  margin: 4rem auto;
+  padding: 0 1.5rem;
+}
+
+.lede {
+  color: #57534e;
+  margin-bottom: 1.5rem;
+}
+
+.status strong {
+  font-family: ui-monospace, Consolas, monospace;
+}
+
+.error {
+  color: #9f1239;
+}
