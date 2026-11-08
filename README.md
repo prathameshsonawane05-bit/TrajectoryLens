@@ -2,7 +2,11 @@
 
 TrajectoryLens analyzes coding-agent runs (terminal task trajectories), shows where and why the agent failed, and groups failures into recurring types.
 
-This repository is at stage 1: the backend exposes a health check, and the frontend displays it.
+The backend stores trajectories in SQLite and the frontend shows the health check.
+
+`POST /runs` stores a trajectory (201, 409 when `run_id` already exists, 422 when the body is invalid). `GET /runs` lists runs, newest first, with optional `status`, `model`, `limit` (default 50, max 100), and `offset`. `GET /runs/{run_id}` returns one run and its steps. `DELETE /runs/{run_id}` deletes the run and its steps.
+
+The database file is `backend/trajectorylens.db` unless `TRAJECTORYLENS_DATABASE_URL` is set.
 
 ## Prerequisites
 
