@@ -16,7 +16,9 @@ Every sample trajectory in this repository was written for TrajectoryLens. No cl
 
 ## Setup
 
-Prerequisites: Python 3.11 and Node.js 20 or newer. Use [uv](https://docs.astral.sh/uv/) when Python is externally managed.
+Prerequisites: Python 3.11. Node.js 20.19 or newer on the 20 line, or Node.js 22.12 or newer. Vite 8.3.6 requires that range.
+
+Use [uv](https://docs.astral.sh/uv/) when Python is externally managed.
 
 Backend, from the repository root. Pick one way to create the virtual environment and install dependencies.
 
@@ -85,6 +87,23 @@ cd ../frontend
 npx tsc --noEmit
 npm run build
 ```
+
+## Versions the checks passed with
+
+These are the versions that passed the checks. They are not pins, except the CI Node version below.
+
+- Python 3.11
+- Local Node v26.13.0
+- GitHub Actions Node v20.20.2
+- fastapi 0.162.2
+- starlette 1.10.0
+- httpx2 2.16.0
+- httpx is not installed
+- sqlalchemy 2.1.8
+- uvicorn 0.54.0
+- pytest 9.2.0
+- ruff 0.17.4
+- mypy 2.4.1
 
 The database file is `backend/trajectorylens.db` unless `TRAJECTORYLENS_DATABASE_URL` is set.
 
