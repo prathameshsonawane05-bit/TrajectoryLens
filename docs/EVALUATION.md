@@ -1,6 +1,6 @@
 # Evaluation
 
-Scores are type-level precision and recall. A run counts once per rule. The labels were written by hand. The v1 labels were not changed after scoring, and the v2 labels were not changed after scoring.
+Scores are type-level precision and recall. A run counts once per rule. The summary screen counts finding rows, so its ignored-error bar on the training samples is 7 while this score counts 5 runs. The labels were written by hand. The v1 labels were not changed after scoring, and the v2 labels were not changed after scoring.
 
 ## v1 results, before any tuning
 

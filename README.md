@@ -91,7 +91,7 @@ npm run build
 
 ## Versions the checks passed with
 
-These are the versions that passed the checks. They are not pins, except the CI Node version below.
+These are the versions that passed the checks. The recorded GitHub Actions line is the patch v20.20.2 from the last green run, while the workflow pin is node-version "20.20", which has not run on GitHub yet.
 
 - Python 3.11
 - Local Node v26.13.0
@@ -206,6 +206,6 @@ The function is registered by importing `backend/app/analyzer/rules.py`, which t
 
 ## Limitations and next steps
 
-The rules are heuristics. They can miss a real failure and they can flag a step a reviewer would accept. The evaluation sets are small: 40 labeled training runs, 15 held-out runs, and 10 later held-out runs. An LLM-based labeler is a possible next step. It could judge paraphrased errors, loops with a wide gap, and messages that answer an error without copying the traceback. That labeler is not implemented here.
+The rules are heuristics. They can miss a real failure and they can flag a step a reviewer would accept. The evaluation sets are small: 40 labeled training runs, 15 held-out runs, and 10 later held-out runs. The summary counts finding rows. Uploaded text is stored as submitted, with no redaction. An LLM-based labeler is a possible next step. It could judge paraphrased errors, loops with a wide gap, and messages that answer an error without copying the traceback. That labeler is not implemented here.
 
 More detail is in [docs/DESIGN.md](docs/DESIGN.md) and [docs/EVALUATION.md](docs/EVALUATION.md).

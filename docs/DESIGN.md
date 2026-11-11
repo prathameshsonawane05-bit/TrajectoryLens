@@ -17,6 +17,9 @@ Every trajectory in this repository is synthetic. The tasks, file paths, command
 - Paths are compared after stripping a leading `./` and turning backslashes into slashes. An absolute path and a relative path match when the longer path ends with a slash plus the shorter path, and the shorter path includes a directory. A bare filename such as `utils.py` joins a longer path only when the run contains exactly one candidate. `src/utils.py` and `tests/utils.py` stay different files.
 - `command_loop` treats `./` and backslashes in the command text as the same command. A later repeat joins the loop only when it is within five steps of the previous repeat and the output is the same or nearly the same.
 - There is no authentication. The app is a local review tool.
+- `GET /summary` counts finding rows. Evaluation counts a run once per rule, even when that rule fires more than once. On the 40 training samples, ignored_error is 5 runs and 7 rows because one passing run emits 3 ignored_error rows.
+- `POST /analyze-all` loads every stored run and its steps, then commits once. The runs page requests findings once per run. That fits a local set on the order of those 40 samples.
+- Uploaded trajectory text is stored as submitted in the local SQLite file. The app does not redact it. Do not upload a log that contains secrets or confidential task content.
 
 ## Limitations
 
