@@ -188,7 +188,7 @@ describe("pages", () => {
     const row = (await screen.findByRole("link", { name: "demo-1" })).closest("tr");
     expect(row?.textContent).toContain("demo-1");
     expect(row?.textContent).toContain("fail");
-    expect(row?.textContent).toContain("1");
+    expect(row?.querySelectorAll("td")[4]?.textContent).toBe("1");
   });
 
   it("shows a database error and no table when the run list fails", async () => {
