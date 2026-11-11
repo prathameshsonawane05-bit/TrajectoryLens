@@ -48,3 +48,18 @@ def test_heldout_v2_rule_quality() -> None:
             print(line)
     else:
         print("(none)")
+    assert mismatches == []
+    counts = {
+        name: (tp, fp, fn, precision, recall)
+        for name, tp, fp, fn, precision, recall in rows
+    }
+    assert counts["command_loop"][:3] == (1, 0, 0)
+    assert counts["edit_then_fail"][:3] == (2, 0, 0)
+    assert counts["false_success_claim"][:3] == (2, 0, 0)
+    assert counts["gave_up_early"][:3] == (1, 0, 0)
+    assert counts["symptom_fix"][:3] == (1, 0, 0)
+    assert counts["ignored_error"][:3] == (1, 0, 0)
+    assert counts["no_test_run"][:3] == (1, 0, 0)
+    for _name, _tp, _fp, _fn, precision, recall in rows:
+        assert precision == 1
+        assert recall == 1

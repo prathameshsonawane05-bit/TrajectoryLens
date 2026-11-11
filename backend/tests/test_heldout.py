@@ -49,3 +49,20 @@ def test_heldout_rule_quality() -> None:
             print(line)
     else:
         print("(none)")
+    assert set(mismatches) == {
+        "hold-03-paraphrased-symptom: expected ['symptom_fix'] predicted []",
+        "hold-07-wide-gap-loop: expected ['command_loop'] predicted []",
+        "hold-09-paraphrased-ack: expected [] predicted ['ignored_error']",
+    }
+    assert len(mismatches) == 3
+    scored = {
+        name: (tp, fp, fn, precision, recall)
+        for name, tp, fp, fn, precision, recall in rows
+    }
+    assert scored["command_loop"] == (1, 0, 1, 1, 1 / 2)
+    assert scored["edit_then_fail"] == (1, 0, 0, 1, 1)
+    assert scored["false_success_claim"] == (1, 0, 0, 1, 1)
+    assert scored["gave_up_early"] == (1, 0, 0, 1, 1)
+    assert scored["symptom_fix"] == (1, 0, 1, 1, 1 / 2)
+    assert scored["ignored_error"] == (2, 1, 0, 2 / 3, 1)
+    assert scored["no_test_run"] == (1, 0, 0, 1, 1)

@@ -733,3 +733,50 @@ def test_analyze_all_is_idempotent(client: TestClient) -> None:
     with Session(get_engine()) as session:
         stored = session.scalar(select(func.count()).select_from(StoredFinding))
     assert stored == 2
+
+
+def test_symptom_fix_paraphrased_cart_total_does_not_match() -> None:
+    run = make_run(
+        [
+            edit(0, "cart/total.py"),
+            make_test_run(1, tests_failed=1, error_signature="total is 10 but expected 12"),
+            edit(2, "cart/total.py"),
+            make_test_run(3, tests_failed=1, error_signature="was 10, wanted 12"),
+            make_test_run(4, tests_failed=1, error_signature="came out 10 instead of 12"),
+            edit(5, "cart/total.py"),
+        ],
+    )
+    assert of_type(run_analysis(run), "symptom_fix") == []
+
+
+def test_ignored_error_paraphrased_missing_module() -> None:
+    output = "ModuleNotFoundError: No module named 'toybox'"
+    acknowledgement = "The ledger helper is missing, so I will add that module."
+    assert "ModuleNotFoundError" not in acknowledgement
+    assert "toybox.ledger" not in acknowledgement
+    assert output not in acknowledgement
+    run = make_run(
+        [
+            command(0, "import toybox.ledger", output, exit_code=1),
+            message(1, acknowledgement),
+        ],
+        final_status="pass",
+    )
+    assert len(of_type(run_analysis(run), "ignored_error")) == 1
+
+
+def test_repeated_failing_command_is_a_loop_and_three_ignored_errors() -> None:
+    output = "Error: connection refused by the fake-client stub"
+    run = make_run(
+        [
+            command(0, "python -m fake_client.ping", output, exit_code=1),
+            command(1, "python -m fake_client.ping", output, exit_code=1),
+            command(2, "python -m fake_client.ping", output, exit_code=1),
+            message(3, "Trying something else entirely."),
+        ],
+        final_status="pass",
+    )
+    found = run_analysis(run)
+    assert len(of_type(found, "ignored_error")) == 3
+    assert len(of_type(found, "command_loop")) == 1
+    assert {item.type for item in found} == {"ignored_error", "command_loop"}
