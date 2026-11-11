@@ -7,6 +7,15 @@ from pydantic_core import InitErrorDetails, PydanticCustomError
 StepType = Literal["command", "edit", "test_run", "message"]
 FinalStatus = Literal["pass", "fail"]
 
+MAX_STEPS = 200
+MAX_RUN_ID_LENGTH = 200
+MAX_TASK_ID_LENGTH = 200
+MAX_MODEL_LENGTH = 200
+MAX_CONTENT_LENGTH = 20_000
+MAX_OUTPUT_LENGTH = 100_000
+MAX_FILE_LENGTH = 500
+MAX_ERROR_SIGNATURE_LENGTH = 2_000
+
 
 def _value_error(loc: tuple[str | int, ...], message: str, value: object) -> InitErrorDetails:
     return InitErrorDetails(
@@ -21,13 +30,13 @@ class StepIn(BaseModel):
 
     index: int = Field(ge=0)
     type: StepType
-    content: str
-    file: str | None = None
-    output: str
+    content: str = Field(max_length=MAX_CONTENT_LENGTH)
+    file: str | None = Field(default=None, max_length=MAX_FILE_LENGTH)
+    output: str = Field(max_length=MAX_OUTPUT_LENGTH)
     exit_code: int | None = None
     tests_passed: int | None = None
     tests_failed: int | None = None
-    error_signature: str | None = None
+    error_signature: str | None = Field(default=None, max_length=MAX_ERROR_SIGNATURE_LENGTH)
 
     @model_validator(mode="after")
     def check_type_requirements(self) -> "StepIn":
@@ -72,12 +81,12 @@ class StepOut(BaseModel):
 class RunCreate(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    run_id: str
-    task_id: str
-    model: str
+    run_id: str = Field(max_length=MAX_RUN_ID_LENGTH)
+    task_id: str = Field(max_length=MAX_TASK_ID_LENGTH)
+    model: str = Field(max_length=MAX_MODEL_LENGTH)
     final_status: FinalStatus
     agent_claimed_success: bool
-    steps: list[StepIn]
+    steps: list[StepIn] = Field(max_length=MAX_STEPS)
 
     @field_validator("run_id")
     @classmethod

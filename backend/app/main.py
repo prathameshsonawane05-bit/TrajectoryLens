@@ -153,13 +153,18 @@ def create_run(payload: RunCreate, db: DbSession) -> RunOut:
         ],
     )
     db.add(run)
+    committed = False
     try:
+        db.flush()
+        _replace_findings(db, run, commit=False)
         db.commit()
+        committed = True
     except IntegrityError:
-        db.rollback()
         raise HTTPException(status_code=409, detail="run_id already exists") from None
+    finally:
+        if not committed:
+            db.rollback()
     db.refresh(run)
-    _replace_findings(db, run)
     return _run_out(run)
 
 

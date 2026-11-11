@@ -9,6 +9,7 @@ Every trajectory in this repository is synthetic. The tasks, file paths, command
 ## Decisions
 
 - A run is stored in SQLite. `POST /runs` writes the steps and immediately replaces that run's findings. `POST /analyze-all` does the same for every stored run, so a second call does not duplicate rows.
+- Step and text limits live in `backend/app/schemas.py`. A larger body returns 422. `POST /runs` stores the run, its steps, and its findings in one transaction, so a failed analysis does not leave a run behind.
 - `GET /runs` returns summaries without steps. `GET /runs/{run_id}` returns the steps. `GET /summary` returns pass/fail totals, finding counts by type, finding counts by model, and the five most common failure types.
 - Step indexes start at 0 and strictly increase. Gaps are allowed.
 - Each rule is a function in `backend/app/analyzer/rules.py` decorated with `@rule`. It receives the run in memory and returns findings. The analyzer does not need the database.

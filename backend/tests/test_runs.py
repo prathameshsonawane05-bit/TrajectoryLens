@@ -1,11 +1,24 @@
 from collections.abc import Sequence
 
+import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
+import app.main as main
+from app.analyzer import run_analysis
 from app.db import get_engine
 from app.models import Step
+from app.schemas import (
+    MAX_CONTENT_LENGTH,
+    MAX_ERROR_SIGNATURE_LENGTH,
+    MAX_FILE_LENGTH,
+    MAX_MODEL_LENGTH,
+    MAX_OUTPUT_LENGTH,
+    MAX_RUN_ID_LENGTH,
+    MAX_STEPS,
+    MAX_TASK_ID_LENGTH,
+)
 
 
 def step(index: int, step_type: str = "command", **overrides: object) -> dict[str, object]:
@@ -317,3 +330,97 @@ def test_delete_removes_run_and_steps(client: TestClient) -> None:
     with Session(get_engine()) as session:
         remaining = session.scalar(select(func.count()).select_from(Step))
     assert remaining == 1
+
+
+def test_failed_analysis_does_not_keep_the_run(
+    client: TestClient,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def explode(_run: object) -> list[object]:
+        raise RuntimeError("analysis failed")
+
+    monkeypatch.setattr(main, "run_analysis", explode)
+    payload = trajectory(run_id="atomic-fail")
+    with pytest.raises(RuntimeError, match="analysis failed"):
+        client.post("/runs", json=payload)
+    assert client.get("/runs/atomic-fail").status_code == 404
+    setattr(main, "run_analysis", run_analysis)  # noqa: B010
+    second = client.post("/runs", json=payload)
+    assert second.status_code == 201
+
+
+def test_rejects_too_many_steps(client: TestClient) -> None:
+    steps = [step(index) for index in range(MAX_STEPS + 1)]
+    response = client.post("/runs", json=trajectory(steps=steps))
+    assert response.status_code == 422
+    assert error_locs(response.json()) == [["body", "steps"]]
+
+
+def test_rejects_long_run_id(client: TestClient) -> None:
+    response = client.post("/runs", json=trajectory(run_id="r" * (MAX_RUN_ID_LENGTH + 1)))
+    assert response.status_code == 422
+    assert error_locs(response.json()) == [["body", "run_id"]]
+
+
+def test_rejects_long_task_id(client: TestClient) -> None:
+    response = client.post("/runs", json=trajectory(task_id="t" * (MAX_TASK_ID_LENGTH + 1)))
+    assert response.status_code == 422
+    assert error_locs(response.json()) == [["body", "task_id"]]
+
+
+def test_rejects_long_model(client: TestClient) -> None:
+    response = client.post("/runs", json=trajectory(model="m" * (MAX_MODEL_LENGTH + 1)))
+    assert response.status_code == 422
+    assert error_locs(response.json()) == [["body", "model"]]
+
+
+def test_rejects_long_content(client: TestClient) -> None:
+    response = client.post(
+        "/runs",
+        json=trajectory(steps=[step(0, content="c" * (MAX_CONTENT_LENGTH + 1))]),
+    )
+    assert response.status_code == 422
+    assert error_locs(response.json()) == [["body", "steps", 0, "content"]]
+
+
+def test_rejects_long_output(client: TestClient) -> None:
+    response = client.post(
+        "/runs",
+        json=trajectory(steps=[step(0, output="o" * (MAX_OUTPUT_LENGTH + 1))]),
+    )
+    assert response.status_code == 422
+    assert error_locs(response.json()) == [["body", "steps", 0, "output"]]
+
+
+def test_rejects_long_file(client: TestClient) -> None:
+    response = client.post(
+        "/runs",
+        json=trajectory(steps=[step(0, "edit", file="f" * (MAX_FILE_LENGTH + 1))]),
+    )
+    assert response.status_code == 422
+    assert error_locs(response.json()) == [["body", "steps", 0, "file"]]
+
+
+def test_rejects_long_error_signature(client: TestClient) -> None:
+    response = client.post(
+        "/runs",
+        json=trajectory(steps=[step(0, error_signature="e" * (MAX_ERROR_SIGNATURE_LENGTH + 1))]),
+    )
+    assert response.status_code == 422
+    assert error_locs(response.json()) == [["body", "steps", 0, "error_signature"]]
+
+
+def test_accepts_max_steps(client: TestClient) -> None:
+    steps = [step(index) for index in range(MAX_STEPS)]
+    response = client.post("/runs", json=trajectory(steps=steps))
+    assert response.status_code == 201
+    assert len(response.json()["steps"]) == MAX_STEPS
+
+
+def test_accepts_max_output_length(client: TestClient) -> None:
+    response = client.post(
+        "/runs",
+        json=trajectory(steps=[step(0, output="o" * MAX_OUTPUT_LENGTH)]),
+    )
+    assert response.status_code == 201
+    assert len(response.json()["steps"][0]["output"]) == MAX_OUTPUT_LENGTH
