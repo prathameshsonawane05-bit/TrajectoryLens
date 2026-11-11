@@ -9,14 +9,16 @@ Fifteen held-out runs from `scripts/generate_heldout.py`, scored before the form
 ```text
 rule                     tp   fp   fn  precision   recall
 ---------------------------------------------------------
-command_loop              0    0    2      1.000    0.000
+command_loop              0    0    2        N/A    0.000
 edit_then_fail            1    0    0      1.000    1.000
 false_success_claim       1    0    0      1.000    1.000
 gave_up_early             1    0    0      1.000    1.000
-symptom_fix               0    0    2      1.000    0.000
+symptom_fix               0    0    2        N/A    0.000
 ignored_error             2    1    0      0.667    1.000
 no_test_run               1    0    0      1.000    1.000
 ```
+
+Precision is undefined when tp and fp are both 0. Those two cells were previously printed as 1.000 by that convention. Recall 0.000 is a real ratio.
 
 Five runs disagreed with the labels:
 
@@ -76,11 +78,11 @@ No v2 run disagreed with its label.
 
 | rule | v1 before | v1 after formatting | v2 |
 | --- | --- | --- | --- |
-| command_loop | 1.000 / 0.000 | 1.000 / 0.500 | 1.000 / 1.000 |
+| command_loop | N/A / 0.000 | 1.000 / 0.500 | 1.000 / 1.000 |
 | edit_then_fail | 1.000 / 1.000 | 1.000 / 1.000 | 1.000 / 1.000 |
 | false_success_claim | 1.000 / 1.000 | 1.000 / 1.000 | 1.000 / 1.000 |
 | gave_up_early | 1.000 / 1.000 | 1.000 / 1.000 | 1.000 / 1.000 |
-| symptom_fix | 1.000 / 0.000 | 1.000 / 0.500 | 1.000 / 1.000 |
+| symptom_fix | N/A / 0.000 | 1.000 / 0.500 | 1.000 / 1.000 |
 | ignored_error | 0.667 / 1.000 | 0.667 / 1.000 | 1.000 / 1.000 |
 | no_test_run | 1.000 / 1.000 | 1.000 / 1.000 | 1.000 / 1.000 |
 

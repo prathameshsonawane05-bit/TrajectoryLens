@@ -73,7 +73,13 @@ def _labels(sample: dict[str, object]) -> set[str]:
     return {str(item) for item in raw}
 
 
-ScoreRow = tuple[str, int, int, int, float, float]
+ScoreRow = tuple[str, int, int, int, float | None, float | None]
+
+
+def _ratio(count: int, total: int) -> float | None:
+    if total == 0:
+        return None
+    return count / total
 
 
 def _score(samples: list[dict[str, object]]) -> tuple[list[ScoreRow], list[str]]:
@@ -102,18 +108,30 @@ def _score(samples: list[dict[str, object]]) -> tuple[list[ScoreRow], list[str]]
         tp = counts[name]["tp"]
         fp = counts[name]["fp"]
         fn = counts[name]["fn"]
-        precision = 1.0 if tp + fp == 0 else tp / (tp + fp)
-        recall = 1.0 if tp + fn == 0 else tp / (tp + fn)
-        rows.append((name, tp, fp, fn, precision, recall))
+        rows.append((name, tp, fp, fn, _ratio(tp, tp + fp), _ratio(tp, tp + fn)))
     return rows, mismatches
+
+
+def _rate_cell(rate: float | None, width: int) -> str:
+    if rate is None:
+        return f"{'N/A':>{width}}"
+    return f"{rate:{width}.3f}"
 
 
 def _table(rows: list[ScoreRow]) -> str:
     header = f"{'rule':<22} {'tp':>4} {'fp':>4} {'fn':>4} {'precision':>10} {'recall':>8}"
     lines = [header, "-" * len(header)]
     for name, tp, fp, fn, precision, recall in rows:
-        lines.append(f"{name:<22} {tp:4d} {fp:4d} {fn:4d} {precision:10.3f} {recall:8.3f}")
+        precision_cell = _rate_cell(precision, 10)
+        recall_cell = _rate_cell(recall, 8)
+        lines.append(f"{name:<22} {tp:4d} {fp:4d} {fn:4d} {precision_cell} {recall_cell}")
     return "\n".join(lines)
+
+
+def _is_weak(rate: float | None) -> bool:
+    if rate is None:
+        return True
+    return rate < 0.8
 
 
 def test_sample_set_covers_every_rule() -> None:
@@ -152,8 +170,37 @@ def test_rule_quality() -> None:
         for line in mismatches:
             print(line)
     weak = [
-        f"{name} precision={precision:.3f} recall={recall:.3f}"
+        f"{name} precision={_rate_cell(precision, 0).strip()} "
+        f"recall={_rate_cell(recall, 0).strip()}"
         for name, _tp, _fp, _fn, precision, recall in rows
-        if precision < 0.8 or recall < 0.8
+        if _is_weak(precision) or _is_weak(recall)
     ]
     assert not weak, rendered + "\n" + "\n".join(weak)
+
+
+def test_ratio_is_undefined_when_the_denominator_is_zero() -> None:
+    assert _ratio(0, 0) is None
+    assert _ratio(0, 2) == 0.0
+    assert _ratio(1, 1) == 1.0
+    assert _ratio(2, 3) == 2 / 3
+
+
+def test_table_prints_undefined_precision_as_na() -> None:
+    rendered = _table([("command_loop", 0, 0, 2, None, 0.0)])
+    line = rendered.splitlines()[-1]
+    assert "N/A" in line
+    assert "0.000" in line
+    assert "1.000" not in line
+
+
+def test_table_prints_defined_ones_as_1_000() -> None:
+    rendered = _table([("edit_then_fail", 1, 0, 0, 1.0, 1.0)])
+    assert "1.000" in rendered
+
+
+def test_training_scores_are_defined_rates() -> None:
+    rows, _mismatches = _score(_build_samples())
+    assert len(rows) == len(RULE_NAMES)
+    for _name, _tp, _fp, _fn, precision, recall in rows:
+        assert isinstance(precision, float)
+        assert isinstance(recall, float)
