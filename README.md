@@ -14,6 +14,13 @@ The backend stores trajectories in SQLite. The frontend lists runs, shows a step
 
 Every sample trajectory in this repository was written for TrajectoryLens. No client, company, or evaluation-platform task is included. The model names harbor-small, lumen-lite, and kite-mini are placeholders. Per-model finding counts do not measure those models. They only exercise the charts.
 
+## Demo walkthrough
+
+- Start the API and the frontend as in Setup, then load the synthetic samples.
+- Open the runs table. Open the run dual-symptom-claim. Its timeline has a symptom-fix finding and a false-success finding.
+- Open the summary page. The model names are placeholders. The ignored-error bar counts finding rows. On the 40 training samples that is 7 rows, while the evaluation counts 5 runs.
+- The result to say out loud: held-out v1 still has three misses on purpose, hold-03-paraphrased-symptom, hold-07-wide-gap-loop, and hold-09-paraphrased-ack. The 1.000 scores are on small sets written by the same person who wrote the rules. The tool has been tested on synthetic trajectories only.
+
 ## Setup
 
 Prerequisites: Python 3.11. Node.js 20.19 or newer on the 20 line, or Node.js 22.12 or newer. Vite 8.3.6 requires that range.
@@ -75,6 +82,8 @@ python scripts/generate_heldout_v2.py
 ```
 
 Checks:
+
+From the repository root:
 
 ```bash
 cd backend
