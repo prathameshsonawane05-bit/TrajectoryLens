@@ -23,7 +23,7 @@ Every sample trajectory in this repository was written for TrajectoryLens. No cl
 
 ## Setup
 
-Prerequisites: Python 3.11. Node.js 20.19 or newer on the 20 line, or Node.js 22.12 or newer. Vite 8.3.6 requires that range.
+Prerequisites: Python 3.11. Node.js 22.22.2 or newer on the 22 line, Node.js 24.15 or newer on the 24 line, or Node.js 26 or newer. jsdom 31.0.0 requires that range, and it is the strictest engine among the committed frontend dependencies.
 
 Use [uv](https://docs.astral.sh/uv/) when Python is externally managed.
 
@@ -100,11 +100,11 @@ npm run build
 
 ## Versions the checks passed with
 
-These are the versions that passed the checks. The recorded GitHub Actions line is the patch v20.20.2 from the last green run, while the workflow pin is node-version "20.20", which has not run on GitHub yet.
+These are the versions that passed the checks. The frontend workflow pin is node-version "24.22.2". That release is on the Node 24 line and satisfies jsdom 31.0.0.
 
 - Python 3.11
 - Local Node v26.13.0
-- GitHub Actions Node v20.20.2
+- GitHub Actions Node 24.22.2
 - fastapi 0.162.2
 - starlette 1.10.0
 - httpx2 2.16.0
