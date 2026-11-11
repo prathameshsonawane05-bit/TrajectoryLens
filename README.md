@@ -85,6 +85,7 @@ pytest -q
 
 cd ../frontend
 npx tsc --noEmit
+npm test
 npm run build
 ```
 
@@ -104,6 +105,10 @@ These are the versions that passed the checks. They are not pins, except the CI 
 - pytest 9.2.0
 - ruff 0.17.4
 - mypy 2.4.1
+- @testing-library/react 16.3.3
+- @testing-library/user-event 14.6.9
+- jsdom 31.0.0
+- vitest 5.1.0
 
 The database file is `backend/trajectorylens.db` unless `TRAJECTORYLENS_DATABASE_URL` is set.
 
